@@ -1,0 +1,41 @@
+body {
+    background: #808080;
+    font-family: sans-serif;
+}
+
+#map-editor {
+    position: absolute;
+    left: 0;
+    right: 100px;
+    top: 0;
+    bottom: 0;
+}
+
+.manager {
+    font-size: 12px;
+    background-color: #f0f0f0;
+    padding: 4px;
+}
+
+.manager h2 {
+    background-color: #dbdbdb;
+    border: 1px #b9b9b9 solid;
+    padding: 4px;
+}
+
+#layer-manager {
+    position: absolute;
+    width: 300px;
+    right: 0;
+    top: 0;
+    bottom: 50%;
+}
+
+#tile-set-manager {
+    position: absolute;
+    width: 300px;
+    right: 0;
+    top: 50%;
+    bottom: 0;
+}
+
