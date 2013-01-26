@@ -49,6 +49,26 @@ define([
         this.layers.length = 0;
     };
 
+    Map.prototype.getTileLayers = function () {
+        var tileLayers = [];
+        $.each(this.layers, function () {
+            if (this instanceof TileLayer) {
+                tileLayers.push(this);
+            }
+        });
+        return tileLayers;
+    };
+
+    Map.prototype.getDoodadGroups = function () {
+        var doodadGroups = [];
+        $.each(this.layers, function () {
+            if (this instanceof DoodadGroup) {
+                doodadGroups.push(this);
+            }
+        });
+        return doodadGroups;
+    };
+
     Map.prototype.addTileSet = function (tileSet) {
         if (tileSet === null) throw new Error("TileSet cannot be null");
         if ($.inArray(tileSet, this.tileSets) > -1) {

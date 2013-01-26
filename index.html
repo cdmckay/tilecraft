@@ -11,8 +11,6 @@
     <div id="layer-manager" class="manager">
         <h2>Layers</h2>
         <ul class="layer-manager-layers">
-            <!--<li><label><input type="checkbox" /> <span>Ground <em>(Tiles)</em></span></label></li>-->
-            <!--<li><label><input type="checkbox" /> <span>Monsters <em>(Objects)</em></span></label></li>-->
         </ul>
         <div class="layer-manager-toolbar toolbar">
             <button class="layer-manager-toolbar-add-button"></button>
@@ -38,5 +36,10 @@
             <button id="tile-set-manager-toolbar-remove-button"></button>
         </div>
     </div>
+    <script id="layers-list-item-template" type="text/x-handlebars-template">
+        <li class="layer-manager-layers-list-item">
+            <input type="checkbox" /> <span>{{ name }} <em>({{ type }})</em></span>
+        </li>
+    </script>
 </body>
 </html>

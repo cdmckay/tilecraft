@@ -24,6 +24,7 @@ require([
     "inflate",
     "jquery",
     "underscore",
+    "tmxjs/doodad-group",
     "tmxjs/map",
     "tmxjs/tile-layer",
     "tmxjs/util/string-util"
@@ -34,6 +35,7 @@ require([
     Inflate,
     $,
     _,
+    DoodadGroup,
     Map,
     TileLayer,
     StringUtil
@@ -46,11 +48,22 @@ require([
     var map = new Map("orthogonal", mapWidth, mapHeight, mapTileWidth, mapTileHeight);
 
     var MapModel = Backbone.Model.extend({
-        addLayer: function(layer) {
-            var map = this.get("map");
-            map.addLayer(layer);
-            this.set("map", map);
-            this.trigger("layer:add");
+        addLayer: function (layer) {
+            this.get("map").addLayer(layer);
+            this.trigger("layer:added");
+        },
+        setLayerVisibleAt: function (index, visible) {
+            this.get("map").layers[index].visible = visible;
+            this.trigger("layer:changed");
+        },
+        getLayers: function () {
+            return this.get("map").layers;
+        },
+        getTileLayers: function () {
+            return this.get("map").getTileLayers();
+        },
+        getDoodadGroups: function () {
+            return this.get("map").getDoodadGroups();
         }
     });
     var mapModel = new MapModel();
@@ -58,28 +71,53 @@ require([
 
     var LayerManagerView = Backbone.View.extend({
         events: {
-            "click .layer-manager-toolbar-add-button": "addLayer"
+            "click .layer-manager-layers-list-item input": "toggleVisible",
+            "click .layer-manager-toolbar-add-button": "addTileLayer"
         },
         initialize: function () {
-            this.listenTo(this.model, "layer:add", this.render);
+            this.listenTo(this.model, "layer:added", this.render);
+            this.listenTo(this.model, "layer:changed", this.render);
         },
         render: function () {
             var layers = this.model.get("map").layers;
             var layersList = this.$(".layer-manager-layers");
+            var template = this.templates.layersListItem;
             layersList.empty();
-            _.each(layers, function () {
-               layersList.append('<li><label><input type="checkbox" /> <span>Test <em>(Tiles)</em></span></label></li>');
+            $.each(layers, function () {
+                var layersListItem = $(template({
+                    name: this.name,
+                    type: this instanceof TileLayer ? "Tiles" : "Objects"
+                }));
+                layersListItem.find("input").prop("checked", this.visible);
+                layersList.append(layersListItem);
             });
             return this;
         },
-        addLayer: function () {
-            this.model.addLayer(new TileLayer(map));
+        templates: {
+            layersListItem: Handlebars.compile($("#layers-list-item-template").html())
+        },
+        toggleVisible: function (event) {
+            var el = $(event.target);
+            var offset = el.parent().prevAll().length;
+            this.model.setLayerVisibleAt(offset, el.prop("checked"));
+            event.preventDefault();
+        },
+        addTileLayer: function () {
+            var tileLayers = this.model.getTileLayers();
+            var layer = new TileLayer(map);
+            layer.name = "Tile Layer " + (tileLayers.length + 1);
+            this.model.addLayer(layer);
+        },
+        addDoodadGroup: function () {
+            var doodadGroups = this.model.getDoodadGroups();
+            var layer = new DoodadGroup(map);
+            layer.name = "Object Group " + (doodadGroups.length + 1);
+            this.model.addLayer(layer);
         }
     });
     var layerManagerView = new LayerManagerView({
         el: $("#layer-manager"),
         model: mapModel
     });
-
-    mapModel.addLayer(new TileLayer(map));
+    layerManagerView.addDoodadGroup();
 });

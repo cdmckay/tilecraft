@@ -3,7 +3,8 @@ define(["jquery", "./layer", "./util/array-util", "./util/rectangle"], function 
         Layer.call(this, map, bounds);
         this.doodads = [];
     };
-    DoodadGroup.prototype = Layer;
+    DoodadGroup.prototype = new Layer;
+    DoodadGroup.prototype.constructor = DoodadGroup;
 
     DoodadGroup.prototype.addDoodad = function (doodad) {
         doodad.group = this;
