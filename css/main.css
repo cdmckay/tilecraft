@@ -37,6 +37,23 @@ em {
     margin-bottom: 4px;
 }
 
+.toolbar {
+    border: 1px #b9b9b9 solid;
+    padding: 4px;
+}
+
+.toolbar button {
+    height: 24px;
+    width: 24px;
+    padding: 4px;
+    border: 1px transparent solid;
+    background: no-repeat center center;
+}
+
+.toolbar button:hover {
+    border-color: #828790;
+}
+
 #layer-manager {
     position: absolute;
     width: 300px;
@@ -48,7 +65,7 @@ em {
 #layer-manager-layers {
     position: absolute;
     top: 32px;
-    bottom: 38px;
+    bottom: 42px;
     left: 4px;
     right: 4px;
     background: white;
@@ -58,43 +75,30 @@ em {
 
 #layer-manager-toolbar {
     position: absolute;
-    border: 1px #b9b9b9 solid;
-    bottom: 0;
+    bottom: 4px;
     height: 34px;
     left: 4px;
     right: 4px;
-    padding: 4px;
-}
-
-#layer-manager-toolbar button {
-    height: 24px;
-    width: 24px;
-    padding: 4px;
-    border: 1px transparent solid;
-}
-
-#layer-manager-toolbar button:hover {
-    border-color: #828790;
 }
 
 #layer-manager-toolbar-add-button {
-    background: url(../images/document-new.png) no-repeat center center;
+    background-image: url(../images/document-new.png);
 }
 
 #layer-manager-toolbar-up-button {
-    background: url(../images/go-up.png) no-repeat center center;
+    background-image: url(../images/go-up.png);
 }
 
 #layer-manager-toolbar-down-button {
-    background: url(../images/go-down.png) no-repeat center center;
+    background-image: url(../images/go-down.png);
 }
 
 #layer-manager-toolbar-duplicate-button {
-    background: url(../images/stock-duplicate-16.png) no-repeat center center;
+    background-image: url(../images/stock-duplicate-16.png);
 }
 
 #layer-manager-toolbar-remove-button {
-    background: url(../images/edit-delete.png) no-repeat center center;
+    background-image: url(../images/edit-delete.png);
 }
 
 #layer-manager-layers li {
@@ -119,5 +123,60 @@ em {
     right: 0;
     top: 50%;
     bottom: 0;
+}
+
+#tile-set-manager-tile-set-selector {
+    position: absolute;
+    top: 32px;
+    height: 20px;
+    left: 4px;
+    right: 4px;
+}
+
+#tile-set-manager-tile-set-selector-select-container {
+    position: absolute;
+    left: 0;
+    right: 74px;
+    top: 0;
+    bottom: 0;
+}
+
+#tile-set-manager-tile-set-selector-select-container select {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+}
+
+#tile-set-manager-tile-set-selector button {
+    position: absolute;
+    width: 70px;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: 0;
+    font-size: 10px;
+}
+
+#tile-set-manager-tile-selector {
+    position: absolute;
+    top: 56px;
+    bottom: 42px;
+    left: 4px;
+    right: 4px;
+    background: white;
+    border: 1px #828790 solid;
+    overflow-y: auto;
+}
+
+#tile-set-manager-toolbar {
+    position: absolute;
+    bottom: 4px;
+    height: 34px;
+    left: 4px;
+    right: 4px;
+}
+
+#tile-set-manager-toolbar-remove-button {
+    background-image: url(../images/edit-delete.png);
 }
 

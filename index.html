@@ -14,18 +14,29 @@
             <li><label><input type="checkbox" /> <span>Ground <em>(Tiles)</em></span></label></li>
             <li><label><input type="checkbox" /> <span>Monsters <em>(Objects)</em></span></label></li>
         </ul>
-        <ul id="layer-manager-toolbar">
-            <li>
-                <button id="layer-manager-toolbar-add-button"></button>
-                <button id="layer-manager-toolbar-up-button"></button>
-                <button id="layer-manager-toolbar-down-button"></button>
-                <button id="layer-manager-toolbar-duplicate-button"></button>
-                <button id="layer-manager-toolbar-remove-button"></button>
-            </li>
-        </ul>
+        <div id="layer-manager-toolbar" class="toolbar">
+            <button id="layer-manager-toolbar-add-button"></button>
+            <button id="layer-manager-toolbar-up-button"></button>
+            <button id="layer-manager-toolbar-down-button"></button>
+            <button id="layer-manager-toolbar-duplicate-button"></button>
+            <button id="layer-manager-toolbar-remove-button"></button>
+        </div>
     </div>
     <div id="tile-set-manager" class="manager">
         <h2>Tile Sets</h2>
+        <div id="tile-set-manager-tile-set-selector">
+            <div id="tile-set-manager-tile-set-selector-select-container">
+                <select name="tile-set-manager-tile-set">
+                    <option value="Desert">Desert</option>
+                </select>
+            </div>
+            <button name="tile-set-manager-tile-set-rename">Rename</button>
+        </div>
+        <div id="tile-set-manager-tile-selector">
+        </div>
+        <div id="tile-set-manager-toolbar" class="toolbar">
+            <button id="tile-set-manager-toolbar-remove-button"></button>
+        </div>
     </div>
 </body>
 </html>
