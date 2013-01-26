@@ -9,6 +9,7 @@ require.config({
         "inflate": "lib/inflate.min"
     },
     shim: {
+        "underscore": { exports: "_" },
         "backbone": { exports: "Backbone", deps: ["underscore"] },
         "handlebars": { exports: "Handlebars" },
         "gunzip": { exports: "Zlib.Gunzip" },
@@ -22,6 +23,7 @@ require([
     "gunzip",
     "inflate",
     "jquery",
+    "underscore",
     "tmxjs/map",
     "tmxjs/tile-layer",
     "tmxjs/util/string-util"
@@ -31,6 +33,7 @@ require([
     Gunzip,
     Inflate,
     $,
+    _,
     Map,
     TileLayer,
     StringUtil
@@ -41,5 +44,42 @@ require([
     var mapTileHeight = 32;
 
     var map = new Map("orthogonal", mapWidth, mapHeight, mapTileWidth, mapTileHeight);
-    map.addLayer(new TileLayer(map));
+
+    var MapModel = Backbone.Model.extend({
+        addLayer: function(layer) {
+            var map = this.get("map");
+            map.addLayer(layer);
+            this.set("map", map);
+            this.trigger("layer:add");
+        }
+    });
+    var mapModel = new MapModel();
+    mapModel.set("map", map);
+
+    var LayerManagerView = Backbone.View.extend({
+        events: {
+            "click .layer-manager-toolbar-add-button": "addLayer"
+        },
+        initialize: function () {
+            this.listenTo(this.model, "layer:add", this.render);
+        },
+        render: function () {
+            var layers = this.model.get("map").layers;
+            var layersList = this.$(".layer-manager-layers");
+            layersList.empty();
+            _.each(layers, function () {
+               layersList.append('<li><label><input type="checkbox" /> <span>Test <em>(Tiles)</em></span></label></li>');
+            });
+            return this;
+        },
+        addLayer: function () {
+            this.model.addLayer(new TileLayer(map));
+        }
+    });
+    var layerManagerView = new LayerManagerView({
+        el: $("#layer-manager"),
+        model: mapModel
+    });
+
+    mapModel.addLayer(new TileLayer(map));
 });

@@ -62,7 +62,7 @@ em {
     bottom: 50%;
 }
 
-#layer-manager-layers {
+.layer-manager-layers {
     position: absolute;
     top: 32px;
     bottom: 42px;
@@ -73,7 +73,7 @@ em {
     overflow-y: auto;
 }
 
-#layer-manager-toolbar {
+.layer-manager-toolbar {
     position: absolute;
     bottom: 4px;
     height: 34px;
@@ -81,39 +81,39 @@ em {
     right: 4px;
 }
 
-#layer-manager-toolbar-add-button {
+button.layer-manager-toolbar-add-button {
     background-image: url(../images/document-new.png);
 }
 
-#layer-manager-toolbar-up-button {
+button.layer-manager-toolbar-up-button {
     background-image: url(../images/go-up.png);
 }
 
-#layer-manager-toolbar-down-button {
+button.layer-manager-toolbar-down-button {
     background-image: url(../images/go-down.png);
 }
 
-#layer-manager-toolbar-duplicate-button {
+button.layer-manager-toolbar-duplicate-button {
     background-image: url(../images/stock-duplicate-16.png);
 }
 
-#layer-manager-toolbar-remove-button {
+button.layer-manager-toolbar-remove-button {
     background-image: url(../images/edit-delete.png);
 }
 
-#layer-manager-layers li {
+.layer-manager-layers li {
     padding: 2px;
 }
 
-#layer-manager-layers li input {
+.layer-manager-layers li input {
     vertical-align: middle;
 }
 
-#layer-manager-layers li span {
+.layer-manager-layers li span {
     vertical-align: middle;
 }
 
-#layer-manager-layers li img {
+.layer-manager-layers li img {
     vertical-align: middle;
 }
 
