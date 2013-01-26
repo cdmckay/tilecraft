@@ -4,7 +4,6 @@ require.config({
         "backbone": "lib/backbone",
         "handlebars": "lib/handlebars",
         "jquery": "lib/jquery",
-        "jquery-ui": "lib/jquery-ui",
         "tmxjs": "lib/tmxjs",
         "gunzip": "lib/gunzip.min",
         "inflate": "lib/inflate.min"
@@ -12,7 +11,6 @@ require.config({
     shim: {
         "backbone": { exports: "Backbone", deps: ["underscore"] },
         "handlebars": { exports: "Handlebars" },
-        "jquery-ui": { exports: "$", deps: ["jquery"] },
         "gunzip": { exports: "Zlib.Gunzip" },
         "inflate": { exports: "Zlib.Inflate" }
     }

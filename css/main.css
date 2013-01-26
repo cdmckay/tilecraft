@@ -1,12 +1,22 @@
+* {
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
 body {
     background: #808080;
     font-family: sans-serif;
 }
 
+em {
+    font-style: italic;
+}
+
 #map-editor {
     position: absolute;
     left: 0;
-    right: 100px;
+    right: 300px;
     top: 0;
     bottom: 0;
 }
@@ -18,9 +28,13 @@ body {
 }
 
 .manager h2 {
+    height: 24px;
+    line-height: 16px;
+    overflow: hidden;
     background-color: #dbdbdb;
     border: 1px #b9b9b9 solid;
     padding: 4px;
+    margin-bottom: 4px;
 }
 
 #layer-manager {
@@ -29,6 +43,74 @@ body {
     right: 0;
     top: 0;
     bottom: 50%;
+}
+
+#layer-manager-layers {
+    position: absolute;
+    top: 32px;
+    bottom: 38px;
+    left: 4px;
+    right: 4px;
+    background: white;
+    border: 1px #828790 solid;
+    overflow-y: auto;
+}
+
+#layer-manager-toolbar {
+    position: absolute;
+    border: 1px #b9b9b9 solid;
+    bottom: 0;
+    height: 34px;
+    left: 4px;
+    right: 4px;
+    padding: 4px;
+}
+
+#layer-manager-toolbar button {
+    height: 24px;
+    width: 24px;
+    padding: 4px;
+    border: 1px transparent solid;
+}
+
+#layer-manager-toolbar button:hover {
+    border-color: #828790;
+}
+
+#layer-manager-toolbar-add-button {
+    background: url(../images/document-new.png) no-repeat center center;
+}
+
+#layer-manager-toolbar-up-button {
+    background: url(../images/go-up.png) no-repeat center center;
+}
+
+#layer-manager-toolbar-down-button {
+    background: url(../images/go-down.png) no-repeat center center;
+}
+
+#layer-manager-toolbar-duplicate-button {
+    background: url(../images/stock-duplicate-16.png) no-repeat center center;
+}
+
+#layer-manager-toolbar-remove-button {
+    background: url(../images/edit-delete.png) no-repeat center center;
+}
+
+#layer-manager-layers li {
+    padding: 2px;
+}
+
+#layer-manager-layers li input {
+    vertical-align: middle;
+}
+
+#layer-manager-layers li span {
+    vertical-align: middle;
+}
+
+#layer-manager-layers li img {
+    vertical-align: middle;
 }
 
 #tile-set-manager {

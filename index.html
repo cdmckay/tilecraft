@@ -4,7 +4,6 @@
     <title>TMXjs Editor</title>
     <script type="text/javascript" src="js/lib/require.js" data-main="js/main"></script>
     <link rel="stylesheet" href="css/reset.css" />
-    <link rel="stylesheet" href="css/jquery-ui/smoothness/jquery-ui.css" />
     <link rel="stylesheet" href="css/main.css" />
 </head>
 <body>
@@ -12,7 +11,17 @@
     <div id="layer-manager" class="manager">
         <h2>Layers</h2>
         <ul id="layer-manager-layers">
-            <li>Ground</li>
+            <li><label><input type="checkbox" /> <span>Ground <em>(Tiles)</em></span></label></li>
+            <li><label><input type="checkbox" /> <span>Monsters <em>(Objects)</em></span></label></li>
+        </ul>
+        <ul id="layer-manager-toolbar">
+            <li>
+                <button id="layer-manager-toolbar-add-button"></button>
+                <button id="layer-manager-toolbar-up-button"></button>
+                <button id="layer-manager-toolbar-down-button"></button>
+                <button id="layer-manager-toolbar-duplicate-button"></button>
+                <button id="layer-manager-toolbar-remove-button"></button>
+            </li>
         </ul>
     </div>
     <div id="tile-set-manager" class="manager">
