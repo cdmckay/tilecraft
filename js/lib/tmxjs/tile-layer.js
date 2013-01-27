@@ -94,6 +94,24 @@ define([
         }
     };
 
+    TileLayer.prototype.clone = function () {
+        var layer = new TileLayer();
+
+        // Layer
+        layer.name = this.name;
+        layer.visible = this.visible;
+        layer.map = this.map;
+        layer.opacity = this.opacity;
+        layer.bounds = this.bounds.clone();
+        layer.properties = $.extend({}, this.properties);
+
+        // Tile Layer
+        layer.cells = this.cells.slice();
+        layer.tileProperties = $.extend({}, this.tileProperties);
+
+        return layer;
+    };
+
     TileLayer.fromElement = function (element, map, options) {
         var layerElement = $(element);
         var tileLayer = new TileLayer(map);

@@ -84,7 +84,9 @@ require([
             "click .layer-manager-layers-list-item input": "toggleVisible",
             "click .layer-manager-toolbar-add-button": "addTileLayer",
             "click .layer-manager-toolbar-up-button": "raiseLayer",
-            "click .layer-manager-toolbar-down-button": "lowerLayer"
+            "click .layer-manager-toolbar-down-button": "lowerLayer",
+            "click .layer-manager-toolbar-duplicate-button": "duplicateLayer",
+            "click .layer-manager-toolbar-remove-button": "removeLayer"
         },
         initialize: function () {
             this.listenTo(this.model, "layer:added", this.render);
@@ -112,7 +114,7 @@ require([
         templates: {
             layersListItem: Handlebars.compile($("#layers-list-item-template").html())
         },
-        selectedOffset: 0,
+        selectedOffset: null,
         select: function (event) {
             var el = $(event.currentTarget);
             var offset = el.prevAll().length;
@@ -144,7 +146,7 @@ require([
         },
         raiseLayer: function () {
             var offset = this.selectedOffset;
-            if (offset !== 0) {
+            if (offset !== null && offset !== 0) {
                 this.selectedOffset--;
                 var layer = this.model.removeLayerAt(offset);
                 this.model.insertLayerAt(offset - 1, layer);
@@ -152,11 +154,23 @@ require([
         },
         lowerLayer: function () {
             var offset = this.selectedOffset;
-            if (offset !== this.model.getLayers().length - 1) {
+            if (offset !== null && offset !== this.model.getLayers().length - 1) {
                 this.selectedOffset++;
                 var layer = this.model.removeLayerAt(offset);
                 this.model.insertLayerAt(offset + 1, layer);
             }
+        },
+        duplicateLayer: function () {
+            var offset = this.selectedOffset;
+            if (offset !== null) {
+                var layer = this.model.getLayers()[offset];
+                var duplicateLayer = layer.clone();
+                duplicateLayer.name = "Copy of " + duplicateLayer.name;
+                this.model.insertLayerAt(offset, duplicateLayer);
+            }
+        },
+        removeLayer: function () {
+
         }
     });
     var layerManagerView = new LayerManagerView({

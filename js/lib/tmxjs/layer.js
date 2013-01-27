@@ -19,5 +19,9 @@ define(["jquery", "./util/rectangle"], function ($, Rectangle) {
         throw new Error("Not implemented");
     };
 
+    Layer.prototype.clone = function () {
+        throw new Error("Not implemented");
+    };
+
     return Layer;
 });
