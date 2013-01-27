@@ -1,6 +1,6 @@
 define(["jquery", "./layer", "./util/rectangle"], function ($, Layer, Rectangle) {
-    var DoodadGroup = function(map, bounds) {
-        Layer.call(this, map, bounds);
+    var DoodadGroup = function(name, bounds) {
+        Layer.call(this, name, bounds);
         this.doodads = [];
     };
     DoodadGroup.prototype = new Layer;

@@ -11,8 +11,8 @@ define([
     Base64,
     Rectangle
 ) {
-    var TileLayer = function(map, bounds) {
-        Layer.call(this, map, bounds);
+    var TileLayer = function(name, bounds) {
+        Layer.call(this, name, bounds);
         this.cells = new Array(this.bounds.w * this.bounds.h);
         this.tileProperties = {};
     };
