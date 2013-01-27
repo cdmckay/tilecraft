@@ -134,30 +134,34 @@ require([
             var tileLayers = this.model.getTileLayers();
             var layer = new TileLayer(map);
             layer.name = "Tile Layer " + (tileLayers.length + 1);
-            this.selectedOffset = 0;
             this.model.insertLayerAt(0, layer);
+            this.selectedOffset = 0;
+            this.render();
         },
         addDoodadGroup: function () {
             var doodadGroups = this.model.getDoodadGroups();
             var layer = new DoodadGroup(map);
             layer.name = "Object Group " + (doodadGroups.length + 1);
-            this.selectedOffset = 0;
             this.model.insertLayerAt(0, layer);
+            this.selectedOffset = 0;
+            this.render();
         },
         raiseLayer: function () {
             var offset = this.selectedOffset;
             if (offset !== null && offset !== 0) {
-                this.selectedOffset--;
                 var layer = this.model.removeLayerAt(offset);
                 this.model.insertLayerAt(offset - 1, layer);
+                this.selectedOffset--;
+                this.render();
             }
         },
         lowerLayer: function () {
             var offset = this.selectedOffset;
             if (offset !== null && offset !== this.model.getLayers().length - 1) {
-                this.selectedOffset++;
                 var layer = this.model.removeLayerAt(offset);
                 this.model.insertLayerAt(offset + 1, layer);
+                this.selectedOffset++;
+                this.render();
             }
         },
         duplicateLayer: function () {
@@ -170,7 +174,13 @@ require([
             }
         },
         removeLayer: function () {
-
+            var offset = this.selectedOffset;
+            if (offset !== null) {
+                this.model.removeLayerAt(offset);
+                var layerCount = this.model.getLayers().length;
+                this.selectedOffset = layerCount === 0 ? null : Math.min(offset, layerCount - 1);
+                this.render();
+            }
         }
     });
     var layerManagerView = new LayerManagerView({

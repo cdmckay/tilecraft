@@ -104,6 +104,9 @@ button.layer-manager-toolbar-remove-button {
 .layer-manager-layers li {
     padding: 2px;
     cursor: default;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .layer-manager-layers li.selected {
