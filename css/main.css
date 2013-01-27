@@ -103,6 +103,11 @@ button.layer-manager-toolbar-remove-button {
 
 .layer-manager-layers li {
     padding: 2px;
+    cursor: default;
+}
+
+.layer-manager-layers li.selected {
+    background: #eee;
 }
 
 .layer-manager-layers li input {

@@ -52,6 +52,15 @@ require([
             this.get("map").addLayer(layer);
             this.trigger("layer:added");
         },
+        insertLayerAt: function (index, layer) {
+            this.get("map").insertLayerAt(index, layer);
+            this.trigger("layer:added");
+        },
+        removeLayerAt: function (index) {
+            var layer = this.get("map").removeLayerAt(index);
+            this.trigger("layer:removed");
+            return layer;
+        },
         setLayerVisibleAt: function (index, visible) {
             this.get("map").layers[index].visible = visible;
             this.trigger("layer:changed");
@@ -71,23 +80,30 @@ require([
 
     var LayerManagerView = Backbone.View.extend({
         events: {
+            "click .layer-manager-layers-list-item": "select",
             "click .layer-manager-layers-list-item input": "toggleVisible",
-            "click .layer-manager-toolbar-add-button": "addTileLayer"
+            "click .layer-manager-toolbar-add-button": "addTileLayer",
+            "click .layer-manager-toolbar-up-button": "raiseLayer",
+            "click .layer-manager-toolbar-down-button": "lowerLayer"
         },
         initialize: function () {
             this.listenTo(this.model, "layer:added", this.render);
             this.listenTo(this.model, "layer:changed", this.render);
+            this.listenTo(this.model, "layer:removed", this.render);
         },
         render: function () {
+            var view = this;
             var layers = this.model.get("map").layers;
             var layersList = this.$(".layer-manager-layers");
-            var template = this.templates.layersListItem;
             layersList.empty();
-            $.each(layers, function () {
-                var layersListItem = $(template({
+            $.each(layers, function (i) {
+                var layersListItem = $(view.templates.layersListItem({
                     name: this.name,
                     type: this instanceof TileLayer ? "Tiles" : "Objects"
                 }));
+                if (i === view.selectedOffset) {
+                    layersListItem.addClass("selected");
+                }
                 layersListItem.find("input").prop("checked", this.visible);
                 layersList.append(layersListItem);
             });
@@ -96,27 +112,55 @@ require([
         templates: {
             layersListItem: Handlebars.compile($("#layers-list-item-template").html())
         },
+        selectedOffset: 0,
+        select: function (event) {
+            var el = $(event.currentTarget);
+            var offset = el.prevAll().length;
+            this.selectedOffset = offset;
+            this.$(".layer-manager-layers li")
+                .removeClass("selected")
+                .eq(offset).addClass("selected");
+        },
         toggleVisible: function (event) {
-            var el = $(event.target);
+            var el = $(event.currentTarget);
             var offset = el.parent().prevAll().length;
             this.model.setLayerVisibleAt(offset, el.prop("checked"));
             event.preventDefault();
+            event.stopPropagation();
         },
         addTileLayer: function () {
             var tileLayers = this.model.getTileLayers();
             var layer = new TileLayer(map);
             layer.name = "Tile Layer " + (tileLayers.length + 1);
-            this.model.addLayer(layer);
+            this.selectedOffset = 0;
+            this.model.insertLayerAt(0, layer);
         },
         addDoodadGroup: function () {
             var doodadGroups = this.model.getDoodadGroups();
             var layer = new DoodadGroup(map);
             layer.name = "Object Group " + (doodadGroups.length + 1);
-            this.model.addLayer(layer);
+            this.selectedOffset = 0;
+            this.model.insertLayerAt(0, layer);
+        },
+        raiseLayer: function () {
+            var offset = this.selectedOffset;
+            if (offset !== 0) {
+                this.selectedOffset--;
+                var layer = this.model.removeLayerAt(offset);
+                this.model.insertLayerAt(offset - 1, layer);
+            }
+        },
+        lowerLayer: function () {
+            var offset = this.selectedOffset;
+            if (offset !== this.model.getLayers().length - 1) {
+                this.selectedOffset++;
+                var layer = this.model.removeLayerAt(offset);
+                this.model.insertLayerAt(offset + 1, layer);
+            }
         }
     });
     var layerManagerView = new LayerManagerView({
-        el: $("#layer-manager"),
+        el: "#layer-manager",
         model: mapModel
     });
     layerManagerView.addDoodadGroup();

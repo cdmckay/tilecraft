@@ -1,4 +1,4 @@
-define(["jquery", "./layer", "./util/array-util", "./util/rectangle"], function ($, Layer, ArrayUtil, Rectangle) {
+define(["jquery", "./layer", "./util/rectangle"], function ($, Layer, Rectangle) {
     var DoodadGroup = function(map, bounds) {
         Layer.call(this, map, bounds);
         this.doodads = [];
@@ -14,7 +14,7 @@ define(["jquery", "./layer", "./util/array-util", "./util/rectangle"], function 
     DoodadGroup.prototype.removeDoodad = function (doodad) {
         for (var n = 0; n < this.doodads.length; n++) {
             if (this.doodads[n] === doodad) {
-                ArrayUtil.remove(this.doodads, n);
+                this.doodads.splice(n, 1);
                 doodad.group = null;
                 break;
             }

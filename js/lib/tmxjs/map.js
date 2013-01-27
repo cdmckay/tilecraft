@@ -2,13 +2,11 @@ define([
     "jquery",
     "./tile-layer",
     "./tile-set",
-    "./util/array-util",
     "./util/rectangle"
 ], function (
     $,
     TileLayer,
     TileSet,
-    ArrayUtil,
     Rectangle
 ) {
     var Map = function (orientation, width, height, tileWidth, tileHeight) {
@@ -41,8 +39,14 @@ define([
         this.layers[index] = layer;
     };
 
+    Map.prototype.insertLayerAt = function (index, layer) {
+        this.layers.splice(index, 0, layer);
+    };
+
     Map.prototype.removeLayerAt = function (index) {
-        ArrayUtil.remove(this.tileSets, index);
+        var layer = this.layers[index];
+        this.layers.splice(index, 1);
+        return layer;
     };
 
     Map.prototype.removeAllLayers = function () {
@@ -90,7 +94,7 @@ define([
             });
         });
         var index = $.inArray(tileSet, this.tileSets);
-        ArrayUtil.remove(this.tileSets, index);
+        this.tileSets.splice(index, 1);
     };
 
     Map.prototype.findTileSet = function (globalId) {
@@ -105,7 +109,7 @@ define([
         return target;
     };
 
-    Map.prototype.swapTileSets = function(indexA, indexB) {
+    Map.prototype.swapTileSets = function(index1, index2) {
 
     };
 
