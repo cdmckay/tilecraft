@@ -184,7 +184,10 @@ button.layer-manager-toolbar-remove-button {
     right: 4px;
 }
 
-#tile-set-manager-toolbar-remove-button {
-    background-image: url(../images/edit-delete.png);
+button.tile-set-manager-toolbar-add-button {
+    background-image: url(../images/document-new.png);
 }
 
+button.tile-set-manager-toolbar-remove-button {
+    background-image: url(../images/edit-delete.png);
+}

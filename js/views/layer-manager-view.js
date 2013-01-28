@@ -26,7 +26,7 @@ define([
         },
         render: function () {
             var view = this;
-            var layers = this.model.get("map").layers;
+            var layers = this.model.getLayers();
             var layersList = this.$(".layer-manager-layers");
             layersList.empty();
             $.each(layers, function (i) {

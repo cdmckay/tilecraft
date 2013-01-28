@@ -1,9 +1,9 @@
 require.config({
     paths: {
+        "jquery": "lib/jquery",
         "underscore": "lib/underscore",
         "backbone": "lib/backbone",
         "handlebars": "lib/handlebars",
-        "jquery": "lib/jquery",
         "tmxjs": "lib/tmxjs",
         "gunzip": "lib/gunzip.min",
         "inflate": "lib/inflate.min"
