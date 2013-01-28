@@ -1,6 +1,7 @@
 require.config({
     paths: {
         "jquery": "lib/jquery",
+        "jquery-colorbox": "lib/jquery.colorbox",
         "underscore": "lib/underscore",
         "backbone": "lib/backbone",
         "handlebars": "lib/handlebars",
@@ -9,6 +10,7 @@ require.config({
         "inflate": "lib/inflate.min"
     },
     shim: {
+        "jquery-colorbox": { deps: ["jquery"] },
         "underscore": { exports: "_" },
         "backbone": { exports: "Backbone", deps: ["underscore"] },
         "handlebars": { exports: "Handlebars" },
@@ -19,6 +21,7 @@ require.config({
 
 require([
     "jquery",
+    "jquery-colorbox",
     "underscore",
     "backbone",
     "handlebars",
@@ -26,9 +29,11 @@ require([
     "inflate",
     "./models/map-model",
     "./views/layer-manager-view",
-    "tmxjs/map"
+    "tmxjs/map",
+    "tmxjs/tile-set"
 ], function (
     $,
+    Colorbox,
     _,
     Backbone,
     Handlebars,
@@ -36,7 +41,8 @@ require([
     Inflate,
     MapModel,
     LayerManagerView,
-    Map
+    Map,
+    TileSet
 ) {
     var mapWidth = 40;
     var mapHeight = 40;
@@ -45,12 +51,42 @@ require([
 
     var map = new Map("orthogonal", mapWidth, mapHeight, mapTileWidth, mapTileHeight);
 
-    var mapModel = new MapModel();
-    mapModel.set("map", map);
+    var mapModel = new MapModel({
+        map: map
+    });
+
+    // Layer Manager
 
     var layerManagerView = new LayerManagerView({
         el: "#layer-manager",
         model: mapModel
     });
     layerManagerView.addDoodadGroup();
+
+    // Tile Set Manager
+
+    var TileSetModel = Backbone.Model.extend({
+    });
+
+    var tileSet = new TileSet();
+    var tileSetModel = new TileSetModel({
+        tileSet: tileSet
+    });
+
+    var AddTileSetView = Backbone.View.extend({
+
+    });
+
+    var addTileSetView = new AddTileSetView({
+        el: "#tile-set-add",
+        model: tileSetModel
+    });
+
+    $(".tile-set-manager-toolbar-add-button").on("click", function () {
+        $.colorbox({
+            inline: true,
+            href: "#tile-set-add",
+            title: "Add Tile Set"
+        });
+    });
 });
