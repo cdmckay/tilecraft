@@ -86,7 +86,12 @@ require([
         $.colorbox({
             inline: true,
             href: "#tile-set-add",
-            title: "Add Tile Set"
+            title: "Add Tile Set",
+            onClosed: function () {
+                // This is to fix a bug with Colorbox where the second time it opens it incorrectly sizes
+                // the cboxLoadedContent div. This may be side-effect of using box-sizing: border-box.
+                $.colorbox.remove();
+            }
         });
     });
 });
