@@ -73,20 +73,22 @@ require([
         tileSet: tileSet
     });
 
-    var AddTileSetView = Backbone.View.extend({
+    var TileSetEditorView = Backbone.View.extend({
 
     });
 
-    var addTileSetView = new AddTileSetView({
-        el: "#tile-set-add",
+    var tileSetEditorView = new TileSetEditorView({
+        el: "#tile-set-editor",
         model: tileSetModel
     });
 
     $(".tile-set-manager-toolbar-add-button").on("click", function () {
         $.colorbox({
             inline: true,
-            href: "#tile-set-add",
+            href: "#tile-set-editor",
             title: "Add Tile Set",
+            overlayClose: false,
+            transition: "none",
             onClosed: function () {
                 // This is to fix a bug with Colorbox where the second time it opens it incorrectly sizes
                 // the cboxLoadedContent div. This may be side-effect of using box-sizing: border-box.

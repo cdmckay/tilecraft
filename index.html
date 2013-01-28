@@ -39,9 +39,35 @@
         </div>
     </div>
     <div id="windows">
-        <div id="tile-set-add" class="window">
-            <h2>Tile Set</h2>
-            Test
+        <div id="tile-set-editor" class="window">
+            <form>
+                <h2>Tile Set</h2>
+                <table>
+                    <tr>
+                        <th><label for="tile-set-editor-name">Name</label></th>
+                        <td><input type="text" name="tile-set-editor-name" id="tile-set-editor-name" /></td>
+                    </tr>
+                    <tr>
+                        <th><label for="tile-set-editor-image">Image</label></th>
+                        <td><input type="file" name="tile-set-editor-image" id="tile-set-editor-image" /></td>
+                    </tr>
+                </table>
+                <h2>Tile Info</h2>
+                <table>
+                    <tr>
+                        <th><label for="tile-set-editor-tile-width">Tile Width</label></th>
+                        <td><input type="text" name="tile-set-editor-tile-width" id="tile-set-editor-tile-width" /></td>
+                        <th><label for="tile-set-editor-tile-margin">Tile Margin</label></th>
+                        <td><input type="text" name="tile-set-editor-tile-margin" id="tile-set-editor-tile-margin" /></td>
+                    </tr>
+                    <tr>
+                        <th><label for="tile-set-editor-tile-height">Tile Height</label></th>
+                        <td><input type="text" name="tile-set-editor-tile-height" id="tile-set-editor-tile-height" /></td>
+                        <th><label for="tile-set-editor-tile-spacing">Tile Spacing</label></th>
+                        <td><input type="text" name="tile-set-editor-tile-spacing" id="tile-set-editor-tile-spacing" /></td>
+                    </tr>
+                </table>
+            </form>
         </div>
     </div>
     <script id="layers-list-item-template" type="text/x-handlebars-template">

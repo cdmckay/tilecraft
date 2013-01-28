@@ -16,7 +16,7 @@ define([
         this.cells = new Array(this.bounds.w * this.bounds.h);
         this.tileProperties = {};
     };
-    TileLayer.prototype = new Layer;
+    TileLayer.prototype = new Layer();
     TileLayer.prototype.constructor = TileLayer;
 
     TileLayer.prototype.rotate = function (angle) {
