@@ -2,6 +2,7 @@ require.config({
     paths: {
         "jquery": "lib/jquery",
         "jquery-colorbox": "lib/jquery.colorbox",
+        "jquery-validate": "lib/jquery.validate",
         "underscore": "lib/underscore",
         "backbone": "lib/backbone",
         "handlebars": "lib/handlebars",
@@ -11,6 +12,7 @@ require.config({
     },
     shim: {
         "jquery-colorbox": { deps: ["jquery"] },
+        "jquery-validate": { deps: ["jquery"] },
         "underscore": { exports: "_" },
         "backbone": { exports: "Backbone", deps: ["underscore"] },
         "handlebars": { exports: "Handlebars" },
@@ -22,27 +24,33 @@ require.config({
 require([
     "jquery",
     "jquery-colorbox",
+    "jquery-validate",
     "underscore",
     "backbone",
     "handlebars",
     "gunzip",
     "inflate",
-    "./models/map-model",
-    "./views/layer-manager-view",
     "tmxjs/map",
-    "tmxjs/tile-set"
+    "./models/map-model",
+    "./models/tile-set-model",
+    "./views/layer-manager-view",
+    "./views/tile-set-editor-view",
+    "./views/tile-set-manager-view"
 ], function (
     $,
-    Colorbox,
+    $colorbox,
+    $validate,
     _,
     Backbone,
     Handlebars,
     Gunzip,
     Inflate,
-    MapModel,
-    LayerManagerView,
     Map,
-    TileSet
+    MapModel,
+    TileSetModel,
+    LayerManagerView,
+    TileSetEditorView,
+    TileSetManagerView
 ) {
     var mapWidth = 40;
     var mapHeight = 40;
@@ -61,39 +69,12 @@ require([
         el: "#layer-manager",
         model: mapModel
     });
-    layerManagerView.addDoodadGroup();
+    layerManagerView.addTileLayer();
 
     // Tile Set Manager
 
-    var TileSetModel = Backbone.Model.extend({
-    });
-
-    var tileSet = new TileSet();
-    var tileSetModel = new TileSetModel({
-        tileSet: tileSet
-    });
-
-    var TileSetEditorView = Backbone.View.extend({
-
-    });
-
-    var tileSetEditorView = new TileSetEditorView({
-        el: "#tile-set-editor",
-        model: tileSetModel
-    });
-
-    $(".tile-set-manager-toolbar-add-button").on("click", function () {
-        $.colorbox({
-            inline: true,
-            href: "#tile-set-editor",
-            title: "Add Tile Set",
-            overlayClose: false,
-            transition: "none",
-            onClosed: function () {
-                // This is to fix a bug with Colorbox where the second time it opens it incorrectly sizes
-                // the cboxLoadedContent div. This may be side-effect of using box-sizing: border-box.
-                $.colorbox.remove();
-            }
-        });
+    var tileSetManagerView = new TileSetManagerView({
+        el: "#tile-set-manager",
+        model: mapModel
     });
 });

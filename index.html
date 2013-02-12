@@ -26,7 +26,6 @@
         <div id="tile-set-manager-tile-set-selector">
             <div id="tile-set-manager-tile-set-selector-select-container">
                 <select name="tile-set-manager-tile-set">
-                    <option value="Desert">Desert</option>
                 </select>
             </div>
             <button name="tile-set-manager-tile-set-rename">Rename</button>
@@ -41,18 +40,18 @@
     <div id="windows">
         <div id="tile-set-editor" class="window">
             <form>
-                <h2>Tile Set</h2>
+                <h2>General</h2>
                 <table>
                     <tr>
                         <th><label for="tile-set-editor-name">Name</label></th>
                         <td><input type="text" name="tile-set-editor-name" id="tile-set-editor-name" /></td>
                     </tr>
                     <tr>
-                        <th><label for="tile-set-editor-image">Image</label></th>
-                        <td><input type="file" name="tile-set-editor-image" id="tile-set-editor-image" /></td>
+                        <th><label for="tile-set-editor-image-url">Image URL</label></th>
+                        <td><input type="text" name="tile-set-editor-image-url" id="tile-set-editor-image-url" /></td>
                     </tr>
                 </table>
-                <h2>Tile Info</h2>
+                <h2>Tile</h2>
                 <table>
                     <tr>
                         <th><label for="tile-set-editor-tile-width">Tile Width</label></th>
@@ -67,6 +66,10 @@
                         <td><input type="text" name="tile-set-editor-tile-spacing" id="tile-set-editor-tile-spacing" /></td>
                     </tr>
                 </table>
+                <div class="buttons">
+                    <input type="submit" name="tile-set-editor-submit-button" id="tile-set-editor-submit-button" value="OK" />
+                    <input type="button" name="tile-set-editor-cancel-button" id="tile-set-editor-cancel-button" value="Cancel" />
+                </div>
             </form>
         </div>
     </div>

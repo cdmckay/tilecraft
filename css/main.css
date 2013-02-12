@@ -238,7 +238,23 @@ button.tile-set-manager-toolbar-remove-button {
     padding-right: 5px;
 }
 
-#tile-set-editor-name {
+#tile-set-editor .buttons {
+    text-align: right;
+}
+
+#tile-set-editor .buttons input {
+    width: 80px;
+    border: 1px #ccc solid;
+    padding: 4px;
+    background: #dbdbdb;
+}
+
+#tile-set-editor .buttons input:hover {
+    background: #cbcbcb;
+}
+
+#tile-set-editor-name,
+#tile-set-editor-image-url {
     width: 100%;
 }
 
@@ -248,5 +264,19 @@ button.tile-set-manager-toolbar-remove-button {
 #tile-set-editor-tile-spacing {
     width: 40px;
     text-align: center;
+}
+
+input[type=text].error,
+input[type=password].error,
+textarea.error,
+select.error {
+    border-color: #c00;
+    background-color: #fee;
+}
+
+label.error {
+    display: block;
+    padding-top: 2px;
+    color: #c00;
 }
 

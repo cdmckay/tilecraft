@@ -20,13 +20,11 @@ define([
             "click .layer-manager-toolbar-remove-button": "removeLayer"
         },
         initialize: function () {
-            this.listenTo(this.model, "layer:added", this.render);
-            this.listenTo(this.model, "layer:changed", this.render);
-            this.listenTo(this.model, "layer:removed", this.render);
+            this.listenTo(this.model, "changed:layers", this.render);
         },
         render: function () {
             var view = this;
-            var layers = this.model.getLayers();
+            var layers = this.model.get("map").layers;
             var layersList = this.$(".layer-manager-layers");
             layersList.empty();
             $.each(layers, function (i) {
@@ -42,6 +40,7 @@ define([
             });
             return this;
         },
+
         templates: {
             layersListItem: Handlebars.compile($("#layers-list-item-template").html())
         },
@@ -65,7 +64,7 @@ define([
             var tileLayers = this.model.getTileLayers();
             var layer = new TileLayer(
                 "Tile Layer " + (tileLayers.length + 1),
-                this.model.getBounds()
+                this.model.get("map").bounds
             );
             this.model.insertLayerAt(0, layer);
             this.selectedOffset = 0;
@@ -75,7 +74,7 @@ define([
             var doodadGroups = this.model.getDoodadGroups();
             var layer = new DoodadGroup(
                 "Object Group " + (doodadGroups.length + 1),
-                this.model.getBounds()
+                this.model.get("map").bounds
             );
             this.model.insertLayerAt(0, layer);
             this.selectedOffset = 0;
@@ -92,7 +91,7 @@ define([
         },
         lowerLayer: function () {
             var offset = this.selectedOffset;
-            if (offset !== null && offset !== this.model.getLayers().length - 1) {
+            if (offset !== null && offset !== this.model.get("map").layers.length - 1) {
                 var layer = this.model.removeLayerAt(offset);
                 this.model.insertLayerAt(offset + 1, layer);
                 this.selectedOffset++;
@@ -102,7 +101,7 @@ define([
         duplicateLayer: function () {
             var offset = this.selectedOffset;
             if (offset !== null) {
-                var layer = this.model.getLayers()[offset];
+                var layer = this.model.get("map").layers[offset];
                 var duplicateLayer = layer.clone();
                 duplicateLayer.name = "Copy of " + duplicateLayer.name;
                 this.model.insertLayerAt(offset, duplicateLayer);
@@ -112,7 +111,7 @@ define([
             var offset = this.selectedOffset;
             if (offset !== null) {
                 this.model.removeLayerAt(offset);
-                var layerCount = this.model.getLayers().length;
+                var layerCount = this.model.get("map").layers.length;
                 this.selectedOffset = layerCount === 0 ? null : Math.min(offset, layerCount - 1);
                 this.render();
             }

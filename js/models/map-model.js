@@ -1,27 +1,21 @@
-define(["backbone"], function (Backbone) {
+define(["underscore", "backbone"], function (_, Backbone) {
     return Backbone.Model.extend({
-        getBounds: function () {
-            return this.get("map").bounds;
-        },
         addLayer: function (layer) {
             this.get("map").addLayer(layer);
-            this.trigger("layer:added");
+            this.trigger("change:layers");
         },
         insertLayerAt: function (index, layer) {
             this.get("map").insertLayerAt(index, layer);
-            this.trigger("layer:added");
+            this.trigger("change:layers");
         },
         removeLayerAt: function (index) {
             var layer = this.get("map").removeLayerAt(index);
-            this.trigger("layer:removed");
+            this.trigger("change:layers");
             return layer;
         },
         setLayerVisibleAt: function (index, visible) {
             this.get("map").layers[index].visible = visible;
-            this.trigger("layer:changed");
-        },
-        getLayers: function () {
-            return this.get("map").layers;
+            this.trigger("change:layers");
         },
         getTileLayers: function () {
             return this.get("map").getTileLayers();
