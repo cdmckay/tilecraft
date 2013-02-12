@@ -70,12 +70,19 @@ define([
             this.formEls.tileMargin.val(tileSet.tileInfo.margin);
             this.formEls.tileSpacing.val(tileSet.tileInfo.spacing);
 
+            var view = this;
             $.colorbox({
                 inline: true,
                 href: this.el,
                 title: "New Tile Set",
                 overlayClose: false,
                 transition: "none",
+                onCleanup: function () {
+                    // Reject the promise if it has not been resolved.
+                    if (view.deferred.state() === "pending") {
+                        view.deferred.reject();
+                    }
+                },
                 onClosed: function () {
                     // This is to fix a bug with Colorbox where the second time it opens it incorrectly sizes
                     // the cboxLoadedContent div. This may be side-effect of using box-sizing: border-box.
@@ -95,14 +102,13 @@ define([
                 this.model.setTileMargin(this.formEls.tileMargin.val());
                 this.model.setTileSpacing(this.formEls.tileSpacing.val());
 
-                $.colorbox.close();
                 this.deferred.resolve(this.model);
+                $.colorbox.close();
             }
             return false;
         },
         cancel: function () {
             $.colorbox.close();
-            this.deferred.reject();
         }
     });
 });
