@@ -23,16 +23,16 @@
     </div>
     <div id="tile-set-manager" class="manager">
         <h2>Tile Sets</h2>
-        <div id="tile-set-manager-tile-set-selector">
-            <div id="tile-set-manager-tile-set-selector-select-container">
-                <select name="tile-set-manager-tile-set">
+        <div class="tile-set-manager-tile-set-selector">
+            <div class="tile-set-manager-tile-set-selector-select-container">
+                <select class="tile-set-manager-tile-sets">
                 </select>
             </div>
-            <button name="tile-set-manager-tile-set-rename">Rename</button>
+            <button class="tile-set-manager-rename-button" disabled="disabled">Rename</button>
         </div>
-        <div id="tile-set-manager-tile-selector">
+        <div class="tile-set-manager-tile-selector">
         </div>
-        <div id="tile-set-manager-toolbar" class="toolbar">
+        <div class="tile-set-manager-toolbar toolbar">
             <button class="tile-set-manager-toolbar-add-button"></button>
             <button class="tile-set-manager-toolbar-remove-button"></button>
         </div>
@@ -73,10 +73,13 @@
             </form>
         </div>
     </div>
-    <script id="layers-list-item-template" type="text/x-handlebars-template">
-        <li class="layer-manager-layers-list-item">
+    <script id="layers-item-template" type="text/x-handlebars-template">
+        <li class="layer-manager-layers-item">
             <input type="checkbox" /> <span><em>({{ type }})</em> {{ name }}</span>
         </li>
+    </script>
+    <script id="tile-sets-option-template" type="text/x-handlebars-template">
+        <option value="{{ index }}">{{ name }}</option>
     </script>
 </body>
 </html>

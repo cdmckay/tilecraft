@@ -21,28 +21,30 @@ define([
         },
 
         templates: {
-            layersListItem: Handlebars.compile($("#layers-list-item-template").html())
+            layersItem: Handlebars.compile($("#layers-item-template").html())
         },
+        layersListEl: null,
         selectedOffset: null,
 
         initialize: function () {
+            this.layersListEl = this.$(".layer-manager-layers");
+
             this.listenTo(this.model, "change:layers", this.render);
         },
         render: function () {
             var view = this;
             var layers = this.model.get("map").layers;
-            var layersList = this.$(".layer-manager-layers");
-            layersList.empty();
+            this.layersListEl.empty();
             $.each(layers, function (i) {
-                var layersListItem = $(view.templates.layersListItem({
+                var layersItemEl = $(view.templates.layersItem({
                     name: this.name,
                     type: this instanceof TileLayer ? "Tiles" : "Objects"
                 }));
                 if (i === view.selectedOffset) {
-                    layersListItem.addClass("selected");
+                    layersItemEl.addClass("selected");
                 }
-                layersListItem.find("input").prop("checked", this.visible);
-                layersList.append(layersListItem);
+                layersItemEl.find("input").prop("checked", this.visible);
+                view.layersListEl.append(layersItemEl);
             });
             return this;
         },
@@ -51,8 +53,8 @@ define([
             var el = $(event.currentTarget);
             var offset = el.prevAll().length;
             this.selectedOffset = offset;
-            this.$(".layer-manager-layers li")
-                .removeClass("selected")
+            this.layersListEl
+                .find("li").removeClass("selected")
                 .eq(offset).addClass("selected");
         },
         toggleVisible: function (event) {

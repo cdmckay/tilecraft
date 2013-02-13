@@ -133,7 +133,7 @@ button.layer-manager-toolbar-remove-button {
     bottom: 0;
 }
 
-#tile-set-manager-tile-set-selector {
+.tile-set-manager-tile-set-selector {
     position: absolute;
     top: 32px;
     height: 20px;
@@ -141,7 +141,7 @@ button.layer-manager-toolbar-remove-button {
     right: 4px;
 }
 
-#tile-set-manager-tile-set-selector-select-container {
+.tile-set-manager-tile-set-selector-select-container {
     position: absolute;
     left: 0;
     right: 74px;
@@ -149,7 +149,7 @@ button.layer-manager-toolbar-remove-button {
     bottom: 0;
 }
 
-#tile-set-manager-tile-set-selector-select-container select {
+.tile-set-manager-tile-set-selector-select-container select {
     margin: 0;
     width: 100%;
     height: 100%;
@@ -157,7 +157,7 @@ button.layer-manager-toolbar-remove-button {
     border: 1px #999 solid;
 }
 
-#tile-set-manager-tile-set-selector button {
+.tile-set-manager-tile-set-selector button {
     position: absolute;
     width: 70px;
     right: 0;
@@ -167,7 +167,7 @@ button.layer-manager-toolbar-remove-button {
     font-size: 10px;
 }
 
-#tile-set-manager-tile-selector {
+.tile-set-manager-tile-selector {
     position: absolute;
     top: 56px;
     bottom: 42px;
@@ -178,7 +178,7 @@ button.layer-manager-toolbar-remove-button {
     overflow-y: auto;
 }
 
-#tile-set-manager-toolbar {
+.tile-set-manager-toolbar {
     position: absolute;
     bottom: 4px;
     height: 34px;

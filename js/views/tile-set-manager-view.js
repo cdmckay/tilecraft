@@ -13,16 +13,44 @@ define([
 ) {
     return Backbone.View.extend({
         events: {
+            "click .tile-set-manager-rename-button": "renameTileSet",
             "click .tile-set-manager-toolbar-add-button": "addTileSet"
         },
 
+        templates: {
+            tileSetsOption: Handlebars.compile($("#tile-sets-option-template").html())
+        },
         editorView: null,
+        tileSetsSelectEl: null,
+        renameButtonEl: null,
 
         initialize: function () {
+            this.editorView = new TileSetEditorView();
+            this.tileSetsSelectEl = this.$(".tile-set-manager-tile-sets");
+            this.renameButtonEl = this.$(".tile-set-manager-rename-button");
+
             this.listenTo(this.model, "change:tileSets", this.render);
         },
         render: function () {
-            alert("A TileSet was added");
+            var view = this;
+            var tileSets = this.model.get("map").tileSets;
+
+            this.tileSetsSelectEl.empty();
+            $.each(tileSets, function (i) {
+                var tileSetOption = $(view.templates.tileSetsOption({
+                    index: i,
+                    name: this.name
+                }));
+                view.tileSetsSelectEl.append(tileSetOption);
+            });
+
+            if (tileSets.length) {
+                this.renameButtonEl.removeAttr("disabled");
+            } else {
+                this.renameButtonEl.attr("disabled", "disabled");
+            }
+
+            return this;
         },
 
         addTileSet: function () {
@@ -32,15 +60,18 @@ define([
             tileSet.tileInfo.w = map.tileInfo.w;
             tileSet.tileInfo.h = map.tileInfo.h;
             tileSet.imageInfo.url = "http://i.imgur.com/Sj89E15.png";
-            this.editorView = new TileSetEditorView({
-                model: new TileSetModel({
-                    tileSet: tileSet
-                })
-            });
-            this.editorView.open()
+            this.editorView.model = new TileSetModel({ tileSet: tileSet });
+            this.editorView
+                .open()
                 .done(function (tileSetModel) {
                     view.model.addTileSet(tileSetModel.get("tileSet"));
                 });
+
+        },
+        renameTileSet: function () {
+            var index = this.tileSetsSelectEl.val();
+            var tileSet = this.model.get("map").tileSets[index];
+            alert("Rename " + tileSet.name);
         }
     });
 });
