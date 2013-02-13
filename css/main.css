@@ -107,6 +107,12 @@ button.layer-manager-toolbar-remove-button {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+
+    -moz-user-select: -moz-none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 .layer-manager-layers li.selected {

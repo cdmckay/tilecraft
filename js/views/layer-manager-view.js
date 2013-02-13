@@ -11,7 +11,8 @@ define([
 ) {
     return Backbone.View.extend({
         events: {
-            "click .layer-manager-layers-list-item": "select",
+            "click .layer-manager-layers-item": "select",
+            "dblclick .layer-manager-layers-item": "renameLayer",
             "click .layer-manager-layers-list-item input": "toggleVisible",
             "click .layer-manager-toolbar-add-button": "addTileLayer",
             "click .layer-manager-toolbar-up-button": "raiseLayer",
@@ -56,6 +57,14 @@ define([
             this.layersEl
                 .find("li").removeClass("selected")
                 .eq(offset).addClass("selected");
+        },
+        renameLayer: function () {
+            var offset = this.selectedOffset;
+            var name = this.model.get("map").layers[offset].name;
+            var result = prompt('Please enter the new Layer name:', name);
+            if (result !== null && result !== "") {
+                this.model.setLayerNameAt(offset, result);
+            }
         },
         toggleVisible: function (event) {
             var el = $(event.currentTarget);

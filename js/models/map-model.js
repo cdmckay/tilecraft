@@ -13,6 +13,10 @@ define(["underscore", "backbone"], function (_, Backbone) {
             this.trigger("change:layers");
             return layer;
         },
+        setLayerNameAt: function (index, name) {
+            this.get("map").layers[index].name = name;
+            this.trigger("change:layers");
+        },
         setLayerVisibleAt: function (index, visible) {
             this.get("map").layers[index].visible = visible;
             this.trigger("change:layers");
