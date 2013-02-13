@@ -19,16 +19,19 @@ define([
         },
 
         templates: {
-            tileSetsOption: Handlebars.compile($("#tile-sets-option-template").html())
+            tileSetsOption: Handlebars.compile($("#tile-sets-option-template").html()),
+            tileSetsTile: Handlebars.compile($("#tile-sets-tile-template").html())
         },
         editorView: null,
-        tileSetsSelectEl: null,
+        tileSetsEl: null,
         renameButtonEl: null,
+        tileSelectorEl: null,
 
         initialize: function () {
             this.editorView = new TileSetEditorView();
-            this.tileSetsSelectEl = this.$(".tile-set-manager-tile-sets");
+            this.tileSetsEl = this.$(".tile-set-manager-tile-sets");
             this.renameButtonEl = this.$(".tile-set-manager-rename-button");
+            this.tileSelectorEl = this.$(".tile-set-manager-tile-selector");
 
             this.listenTo(this.model, "change:tileSets", this.render);
         },
@@ -36,13 +39,13 @@ define([
             var view = this;
             var tileSets = this.model.get("map").tileSets;
 
-            this.tileSetsSelectEl.empty();
+            this.tileSetsEl.empty();
             $.each(tileSets, function (i) {
-                var tileSetOption = $(view.templates.tileSetsOption({
+                var tileSetOptionEl = $(view.templates.tileSetsOption({
                     index: i,
                     name: this.name
                 }));
-                view.tileSetsSelectEl.append(tileSetOption);
+                view.tileSetsEl.append(tileSetOptionEl);
             });
 
             if (tileSets.length) {
@@ -51,16 +54,26 @@ define([
                 this.renameButtonEl.attr("disabled", "disabled");
             }
 
-            var index = this.tileSetsSelectEl.val();
+            var index = this.tileSetsEl.val();
             if (index !== null) {
-
+                this.tileSelectorEl.empty();
+                $.each(tileSets[index].tiles, function (i, tile) {
+                    var tileSetTileEl = $(view.templates.tileSetsTile({
+                        x: tile.bounds.x,
+                        y: tile.bounds.y,
+                        w: tile.bounds.w,
+                        h: tile.bounds.h,
+                        url: tile.imageInfo.url
+                    }));
+                    view.tileSelectorEl.append(tileSetTileEl);
+                });
             }
 
             return this;
         },
 
         renameTileSet: function () {
-            var index = this.tileSetsSelectEl.val();
+            var index = this.tileSetsEl.val();
             var name = this.model.get("map").tileSets[index].name;
             var result = prompt('Please enter the new Tile Set name:', name);
             if (result !== null && result !== "") {
@@ -73,7 +86,6 @@ define([
             var tileSet = new TileSet(map.getMaxGlobalId() + 1);
             tileSet.tileInfo.w = map.tileInfo.w;
             tileSet.tileInfo.h = map.tileInfo.h;
-            tileSet.imageInfo.url = "http://i.imgur.com/Sj89E15.png";
             this.editorView.model = new TileSetModel({ tileSet: tileSet });
             this.editorView
                 .open()
@@ -83,7 +95,7 @@ define([
 
         },
         removeTileSet: function () {
-            var index = this.tileSetsSelectEl.val();
+            var index = this.tileSetsEl.val();
             if (index !== null) {
                 this.model.removeTileSetAt(index);
             }

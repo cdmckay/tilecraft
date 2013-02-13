@@ -31,6 +31,7 @@ require([
     "gunzip",
     "inflate",
     "tmxjs/map",
+    "tmxjs/tile-set",
     "./models/map-model",
     "./models/tile-set-model",
     "./views/layer-manager-view",
@@ -46,6 +47,7 @@ require([
     Gunzip,
     Inflate,
     Map,
+    TileSet,
     MapModel,
     TileSetModel,
     LayerManagerView,
@@ -58,7 +60,6 @@ require([
     var mapTileHeight = 32;
 
     var map = new Map("orthogonal", mapWidth, mapHeight, mapTileWidth, mapTileHeight);
-
     var mapModel = new MapModel({
         map: map
     });
@@ -77,4 +78,15 @@ require([
         el: "#tile-set-manager",
         model: mapModel
     });
+    var tileSet = new TileSet(map.getMaxGlobalId() + 1);
+    tileSet.name = "Desert";
+    tileSet.imageInfo.url = "http://i.imgur.com/Sj89E15.png";
+    tileSet.imageInfo.w = 265;
+    tileSet.imageInfo.h = 199;
+    tileSet.tileInfo.w = map.tileInfo.w;
+    tileSet.tileInfo.h = map.tileInfo.h;
+    tileSet.tileInfo.margin = 1;
+    tileSet.tileInfo.spacing = 1;
+    tileSet.generateTiles();
+    mapModel.addTileSet(tileSet);
 });

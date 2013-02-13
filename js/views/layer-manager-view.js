@@ -23,18 +23,18 @@ define([
         templates: {
             layersItem: Handlebars.compile($("#layers-item-template").html())
         },
-        layersListEl: null,
+        layersEl: null,
         selectedOffset: null,
 
         initialize: function () {
-            this.layersListEl = this.$(".layer-manager-layers");
+            this.layersEl = this.$(".layer-manager-layers");
 
             this.listenTo(this.model, "change:layers", this.render);
         },
         render: function () {
             var view = this;
             var layers = this.model.get("map").layers;
-            this.layersListEl.empty();
+            this.layersEl.empty();
             $.each(layers, function (i) {
                 var layersItemEl = $(view.templates.layersItem({
                     name: this.name,
@@ -44,7 +44,7 @@ define([
                     layersItemEl.addClass("selected");
                 }
                 layersItemEl.find("input").prop("checked", this.visible);
-                view.layersListEl.append(layersItemEl);
+                view.layersEl.append(layersItemEl);
             });
             return this;
         },
@@ -53,7 +53,7 @@ define([
             var el = $(event.currentTarget);
             var offset = el.prevAll().length;
             this.selectedOffset = offset;
-            this.layersListEl
+            this.layersEl
                 .find("li").removeClass("selected")
                 .eq(offset).addClass("selected");
         },

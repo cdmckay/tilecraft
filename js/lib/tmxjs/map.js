@@ -111,7 +111,7 @@ define([
 
     Map.prototype.getMaxGlobalId = function () {
         if (!this.tileSets.length) {
-            return 1;
+            return 0;
         }
         var tileSet = this.tileSets[this.tileSets.length - 1];
         return tileSet.firstGlobalId + tileSet.tiles.length - 1;

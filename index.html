@@ -81,5 +81,8 @@
     <script id="tile-sets-option-template" type="text/x-handlebars-template">
         <option value="{{ index }}">{{ name }}</option>
     </script>
+    <script id="tile-sets-tile-template" type="text/x-handlebars-template">
+        <div style='width: {{ w }}px; height: {{ h }}px; background: url("{{ url }}") no-repeat -{{ x }}px -{{ y }}px;'></div>
+    </script>
 </body>
 </html>

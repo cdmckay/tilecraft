@@ -109,6 +109,7 @@ define([
                 image.onload = function () {
                     tileSet.imageInfo.w = this.width;
                     tileSet.imageInfo.h = this.height;
+                    tileSet.generateTiles();
 
                     view.deferred.resolve(view.model);
                     $.colorbox.close();
