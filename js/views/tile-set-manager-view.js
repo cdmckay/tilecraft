@@ -15,17 +15,23 @@ define([
         events: {
             "click .tile-set-manager-toolbar-add-button": "addTileSet"
         },
-        initialize: function () {
-        },
-        render: function () {
-        },
 
         editorView: null,
+
+        initialize: function () {
+            this.listenTo(this.model, "change:tileSets", this.render);
+        },
+        render: function () {
+            alert("A TileSet was added");
+        },
+
         addTileSet: function () {
-            var mapTileInfo = this.model.get("map").tileInfo;
-            var tileSet = new TileSet();
-            tileSet.tileInfo.w = mapTileInfo.w;
-            tileSet.tileInfo.h = mapTileInfo.h;
+            var view = this;
+            var map = this.model.get("map");
+            var tileSet = new TileSet(map.getMaxGlobalId() + 1);
+            tileSet.tileInfo.w = map.tileInfo.w;
+            tileSet.tileInfo.h = map.tileInfo.h;
+            tileSet.imageInfo.url = "http://i.imgur.com/Sj89E15.png";
             this.editorView = new TileSetEditorView({
                 model: new TileSetModel({
                     tileSet: tileSet
@@ -33,11 +39,8 @@ define([
             });
             this.editorView.open()
                 .done(function (tileSetModel) {
-                    alert("Added TileSet: " + tileSetModel.get("tileSet").name);
-                })
-                .fail(function () {
-                    alert("No TileSet added");
-                })
+                    view.model.addTileSet(tileSetModel.get("tileSet"));
+                });
         }
     });
 });

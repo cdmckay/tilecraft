@@ -102,8 +102,18 @@ define([
                 this.model.setTileMargin(this.formEls.tileMargin.val());
                 this.model.setTileSpacing(this.formEls.tileSpacing.val());
 
-                this.deferred.resolve(this.model);
-                $.colorbox.close();
+                // Get the image width and height.
+                var view = this;
+                var tileSet = this.model.get("tileSet");
+                var image = new Image();
+                image.onload = function () {
+                    tileSet.imageInfo.w = this.width;
+                    tileSet.imageInfo.h = this.height;
+
+                    view.deferred.resolve(view.model);
+                    $.colorbox.close();
+                };
+                image.src = tileSet.imageInfo.url;
             }
             return false;
         },

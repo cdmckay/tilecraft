@@ -22,6 +22,11 @@ define(["underscore", "backbone"], function (_, Backbone) {
         },
         getDoodadGroups: function () {
             return this.get("map").getDoodadGroups();
+        },
+
+        addTileSet: function (tileSet) {
+            this.get("map").addTileSet(tileSet);
+            this.trigger("change:tileSets");
         }
     });
 });

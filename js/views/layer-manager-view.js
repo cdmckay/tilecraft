@@ -19,8 +19,14 @@ define([
             "click .layer-manager-toolbar-duplicate-button": "duplicateLayer",
             "click .layer-manager-toolbar-remove-button": "removeLayer"
         },
+
+        templates: {
+            layersListItem: Handlebars.compile($("#layers-list-item-template").html())
+        },
+        selectedOffset: null,
+
         initialize: function () {
-            this.listenTo(this.model, "changed:layers", this.render);
+            this.listenTo(this.model, "change:layers", this.render);
         },
         render: function () {
             var view = this;
@@ -41,10 +47,6 @@ define([
             return this;
         },
 
-        templates: {
-            layersListItem: Handlebars.compile($("#layers-list-item-template").html())
-        },
-        selectedOffset: null,
         select: function (event) {
             var el = $(event.currentTarget);
             var offset = el.prevAll().length;
