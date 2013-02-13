@@ -54,10 +54,11 @@ define([
                 this.renameButtonEl.attr("disabled", "disabled");
             }
 
+            this.tileSelectorEl.empty();
             var index = this.tileSetsEl.val();
             if (index !== null) {
-                this.tileSelectorEl.empty();
-                $.each(tileSets[index].tiles, function (i, tile) {
+                var tileSet = tileSets[index];
+                $.each(tileSet.tiles, function (i, tile) {
                     var tileSetTileEl = $(view.templates.tileSetsTile({
                         x: tile.bounds.x,
                         y: tile.bounds.y,

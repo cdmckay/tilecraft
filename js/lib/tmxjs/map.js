@@ -90,9 +90,10 @@ define([
             return;
         }
 
+        var map = this;
         var tileSet = this.tileSets[index];
         $.each(tileSet.tiles, function (tn, tile) {
-            $.each(this.layers, function (ln, layer) {
+            $.each(map.layers, function (ln, layer) {
                 layer.removeTile(tile);
             });
         });
