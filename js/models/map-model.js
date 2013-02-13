@@ -31,6 +31,10 @@ define(["underscore", "backbone"], function (_, Backbone) {
         setTileSetNameAt: function (index, name) {
             this.get("map").tileSets[index].name = name;
             this.trigger("change:tileSets");
+        },
+        removeTileSetAt: function (index) {
+            this.get("map").removeTileSetAt(index);
+            this.trigger("change:tileSets");
         }
     });
 });

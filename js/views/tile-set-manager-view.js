@@ -14,7 +14,8 @@ define([
     return Backbone.View.extend({
         events: {
             "click .tile-set-manager-rename-button": "renameTileSet",
-            "click .tile-set-manager-toolbar-add-button": "addTileSet"
+            "click .tile-set-manager-toolbar-add-button": "addTileSet",
+            "click .tile-set-manager-toolbar-remove-button": "removeTileSet"
         },
 
         templates: {
@@ -50,9 +51,22 @@ define([
                 this.renameButtonEl.attr("disabled", "disabled");
             }
 
+            var index = this.tileSetsSelectEl.val();
+            if (index !== null) {
+
+            }
+
             return this;
         },
 
+        renameTileSet: function () {
+            var index = this.tileSetsSelectEl.val();
+            var name = this.model.get("map").tileSets[index].name;
+            var result = prompt('Please enter the new Tile Set name:', name);
+            if (result !== null && result !== "") {
+                this.model.setTileSetNameAt(index, result);
+            }
+        },
         addTileSet: function () {
             var view = this;
             var map = this.model.get("map");
@@ -68,12 +82,10 @@ define([
                 });
 
         },
-        renameTileSet: function () {
+        removeTileSet: function () {
             var index = this.tileSetsSelectEl.val();
-            var name = this.model.get("map").tileSets[index].name;
-            var result = prompt('Please enter the new Tile Set name:', name);
-            if (result !== null) {
-                this.model.setTileSetNameAt(index, result);
+            if (index !== null) {
+                this.model.removeTileSetAt(index);
             }
         }
     });

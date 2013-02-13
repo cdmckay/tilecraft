@@ -85,18 +85,17 @@ define([
         this.tileSets.push(tileSet);
     };
 
-    Map.prototype.removeTileSet = function (tileSet) {
-        if (tileSet === null) throw new Error("TileSet cannot be null");
-        if ($.inArray(tileSet, this.tileSets) > -1) {
+    Map.prototype.removeTileSetAt = function (index) {
+        if (index >= this.tileSets.length) {
             return;
         }
 
+        var tileSet = this.tileSets[index];
         $.each(tileSet.tiles, function (tn, tile) {
             $.each(this.layers, function (ln, layer) {
                 layer.removeTile(tile);
             });
         });
-        var index = $.inArray(tileSet, this.tileSets);
         this.tileSets.splice(index, 1);
     };
 
