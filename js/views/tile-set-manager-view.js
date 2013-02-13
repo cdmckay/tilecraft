@@ -70,8 +70,11 @@ define([
         },
         renameTileSet: function () {
             var index = this.tileSetsSelectEl.val();
-            var tileSet = this.model.get("map").tileSets[index];
-            alert("Rename " + tileSet.name);
+            var name = this.model.get("map").tileSets[index].name;
+            var result = prompt('Please enter the new Tile Set name:', name);
+            if (result !== null) {
+                this.model.setTileSetNameAt(index, result);
+            }
         }
     });
 });

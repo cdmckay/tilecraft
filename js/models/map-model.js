@@ -27,6 +27,10 @@ define(["underscore", "backbone"], function (_, Backbone) {
         addTileSet: function (tileSet) {
             this.get("map").addTileSet(tileSet);
             this.trigger("change:tileSets");
+        },
+        setTileSetNameAt: function (index, name) {
+            this.get("map").tileSets[index].name = name;
+            this.trigger("change:tileSets");
         }
     });
 });
