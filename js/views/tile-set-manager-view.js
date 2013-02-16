@@ -13,7 +13,9 @@ define([
 ) {
     return Backbone.View.extend({
         events: {
+            "click .tile-set-manager-tile-selector": "selectTile",
             "click .tile-set-manager-rename-button": "renameTileSet",
+            "change tile-set-manager-tile-sets": "selectTileSet",
             "click .tile-set-manager-toolbar-add-button": "addTileSet",
             "click .tile-set-manager-toolbar-remove-button": "removeTileSet"
         },
@@ -27,17 +29,30 @@ define([
         renameButtonEl: null,
         tileSelectorEl: null,
 
+        /* The currently selected TileSet index. */
+        selectedTileSetIndex: null,
+
+        /* The currently selected Tile in the TileSet index. */
+        selectedTileIndex: null,
+
         initialize: function () {
             this.editorView = new TileSetEditorView();
             this.tileSetsEl = this.$(".tile-set-manager-tile-sets");
             this.renameButtonEl = this.$(".tile-set-manager-rename-button");
             this.tileSelectorEl = this.$(".tile-set-manager-tile-selector");
 
+            // TODO Read in existing TileSet information from model.
+
             this.listenTo(this.model, "change:tileSets", this.render);
         },
         render: function () {
             var view = this;
             var tileSets = this.model.get("map").tileSets;
+
+            // This is for the case where a TileSet has been added via the model.
+            if (this.selectedTileSetIndex === null && tileSets.length) {
+                this.selectedTileSetIndex = 0;
+            }
 
             this.tileSetsEl.empty();
             $.each(tileSets, function (i) {
@@ -55,9 +70,8 @@ define([
             }
 
             this.tileSelectorEl.empty();
-            var index = this.tileSetsEl.val();
-            if (index !== null) {
-                var tileSet = tileSets[index];
+            if (this.selectedTileSetIndex !== null) {
+                var tileSet = tileSets[this.selectedTileSetIndex];
                 $.each(tileSet.tiles, function (i, tile) {
                     var tileSetTileEl = $(view.templates.tileSetsTile({
                         x: tile.bounds.x,
@@ -73,8 +87,13 @@ define([
             return this;
         },
 
-        renameTileSet: function () {
+        selectTileSet: function () {
             var index = this.tileSetsEl.val();
+            this.selectedTileSetIndex = index;
+            this.render();
+        },
+        renameTileSet: function () {
+            var index = this.selectedTileSetIndex;
             var name = this.model.get("map").tileSets[index].name;
             var result = prompt('Please enter the new Tile Set name:', name);
             if (result !== null && result !== "") {
@@ -92,14 +111,25 @@ define([
                 .open()
                 .done(function (tileSetModel) {
                     view.model.addTileSet(tileSetModel.get("tileSet"));
+                    view.selectedTileSetIndex = map.tileSets.length - 1;
                 });
 
         },
         removeTileSet: function () {
-            var index = this.tileSetsEl.val();
+            var index = this.selectedTileSetIndex;
             if (index !== null) {
                 this.model.removeTileSetAt(index);
+                var tileSetCount = this.model.get("map").tileSets.length;
+                this.selectedTileSetIndex = tileSetCount === 0 ? null : Math.min(index, tileSetCount - 1);
             }
+        },
+        selectTile: function (event) {
+            var el = $(event.target);
+            var tileIndex = el.prevAll().length;
+            this.selectedTileIndex = tileIndex;
+            this.tileSelectorEl
+                .children().empty()
+                .eq(tileIndex).append($("<div>"));
         }
     });
 });
