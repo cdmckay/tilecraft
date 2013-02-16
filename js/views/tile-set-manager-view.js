@@ -124,12 +124,19 @@ define([
             }
         },
         selectTile: function (event) {
-            var el = $(event.target);
-            var tileIndex = el.prevAll().length;
-            this.selectedTileIndex = tileIndex;
-            this.tileSelectorEl
-                .children().empty()
-                .eq(tileIndex).append($("<div>"));
+            if (event.target !== event.currentTarget) {
+                var el = $(event.target);
+                var tileIndex = el.prevAll().length;
+                var tileEls = this.tileSelectorEl.children();
+
+                // Remove old selected if it exists.
+                if (this.selectedTileIndex !== null) {
+                    tileEls.eq(this.selectedTileIndex).empty();
+                }
+
+                tileEls.eq(tileIndex).append($("<div>"));
+                this.selectedTileIndex = tileIndex;
+            }
         }
     });
 });

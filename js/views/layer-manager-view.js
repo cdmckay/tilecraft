@@ -64,8 +64,15 @@ define([
         selectLayer: function (event) {
             var el = $(event.currentTarget);
             var index = el.prevAll().length;
+            var els = this.layersEl.children();
+
+            // Remove old selected if it exists.
+            if (this.selectedIndex !== null) {
+                els.eq(this.selectedIndex).removeClass("selected");
+            }
+
+            els.eq(index).addClass("selected");
             this.selectedIndex = index;
-            this.render();
         },
         renameLayer: function () {
             var index = this.selectedIndex;
