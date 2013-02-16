@@ -31,10 +31,12 @@ require([
     "gunzip",
     "inflate",
     "tmxjs/map",
+    "tmxjs/tile-layer",
     "tmxjs/tile-set",
     "./models/map-model",
     "./models/tile-set-model",
     "./views/layer-manager-view",
+    "./views/map-editor-view",
     "./views/tile-set-editor-view",
     "./views/tile-set-manager-view"
 ], function (
@@ -47,10 +49,12 @@ require([
     Gunzip,
     Inflate,
     Map,
+    TileLayer,
     TileSet,
     MapModel,
     TileSetModel,
     LayerManagerView,
+    MapEditorView,
     TileSetEditorView,
     TileSetManagerView
 ) {
@@ -60,24 +64,10 @@ require([
     var mapTileHeight = 32;
 
     var map = new Map("orthogonal", mapWidth, mapHeight, mapTileWidth, mapTileHeight);
-    var mapModel = new MapModel({
-        map: map
-    });
 
-    // Layer Manager
+    var layer = new TileLayer("Tile Layer 1", map.bounds.clone());
+    map.addLayer(layer);
 
-    var layerManagerView = new LayerManagerView({
-        el: "#layer-manager",
-        model: mapModel
-    });
-    layerManagerView.addTileLayer();
-
-    // Tile Set Manager
-
-    var tileSetManagerView = new TileSetManagerView({
-        el: "#tile-set-manager",
-        model: mapModel
-    });
     var tileSet = new TileSet(map.getMaxGlobalId() + 1);
     tileSet.name = "Desert";
     tileSet.imageInfo.url = "http://i.imgur.com/Sj89E15.png";
@@ -88,5 +78,32 @@ require([
     tileSet.tileInfo.margin = 1;
     tileSet.tileInfo.spacing = 1;
     tileSet.generateTiles();
-    mapModel.addTileSet(tileSet);
+    map.addTileSet(tileSet);
+
+    // Map Model
+
+    var mapModel = new MapModel({
+        map: map
+    });
+
+    // Map Editor
+
+    var mapEditorView = new MapEditorView({
+        el: "#map-editor",
+        model: mapModel
+    });
+
+    // Layer Manager
+
+    var layerManagerView = new LayerManagerView({
+        el: "#layer-manager",
+        model: mapModel
+    });
+
+    // Tile Set Manager
+
+    var tileSetManagerView = new TileSetManagerView({
+        el: "#tile-set-manager",
+        model: mapModel
+    });
 });

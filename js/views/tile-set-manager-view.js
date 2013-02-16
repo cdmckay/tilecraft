@@ -41,9 +41,12 @@ define([
             this.renameButtonEl = this.$(".tile-set-manager-rename-button");
             this.tileSelectorEl = this.$(".tile-set-manager-tile-selector");
 
-            // TODO Read in existing TileSet information from model.
-
             this.listenTo(this.model, "change:tileSets", this.render);
+
+            var tileSets = this.model.get("map").tileSets;
+            if (tileSets) {
+                this.render();
+            }
         },
         render: function () {
             var view = this;

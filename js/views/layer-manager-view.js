@@ -32,9 +32,12 @@ define([
         initialize: function () {
             this.layersEl = this.$(".layer-manager-layers");
 
-            // TODO Read in existing Layer information from model.
-
             this.listenTo(this.model, "change:layers", this.render);
+
+            var layers = this.model.get("map").layers;
+            if (layers.length) {
+                this.render();
+            }
         },
         render: function () {
             var view = this;
@@ -93,7 +96,7 @@ define([
             var tileLayers = this.model.getTileLayers();
             var layer = new TileLayer(
                 "Tile Layer " + (tileLayers.length + 1),
-                this.model.get("map").bounds
+                this.model.get("map").bounds.clone()
             );
             this.model.insertLayerAt(0, layer);
             this.selectedIndex = 0;
@@ -102,7 +105,7 @@ define([
             var doodadGroups = this.model.getDoodadGroups();
             var layer = new DoodadGroup(
                 "Object Group " + (doodadGroups.length + 1),
-                this.model.get("map").bounds
+                this.model.get("map").bounds.clone()
             );
             this.model.insertLayerAt(0, layer);
             this.selectedIndex = 0;
