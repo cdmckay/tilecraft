@@ -80,6 +80,9 @@ require([
     tileSet.generateTiles();
     map.addTileSet(tileSet);
 
+    // Event Aggregator
+    var aggregator = _.extend({}, Backbone.Events);
+
     // Map Model
 
     var mapModel = new MapModel({
@@ -90,20 +93,23 @@ require([
 
     var mapEditorView = new MapEditorView({
         el: "#map-editor",
-        model: mapModel
+        model: mapModel,
+        aggregator: aggregator
     });
 
     // Layer Manager
 
     var layerManagerView = new LayerManagerView({
         el: "#layer-manager",
-        model: mapModel
+        model: mapModel,
+        aggregator: aggregator
     });
 
     // Tile Set Manager
 
     var tileSetManagerView = new TileSetManagerView({
         el: "#tile-set-manager",
-        model: mapModel
+        model: mapModel,
+        aggregator: aggregator
     });
 });

@@ -22,6 +22,7 @@ define([
             "click .tile-set-manager-toolbar-remove-button": "removeTileSet"
         },
 
+        aggregator: null,
         templates: {
             tileSetsOption: Handlebars.compile($("#tile-sets-option-template").html()),
             tileSetsTile: Handlebars.compile($("#tile-sets-tile-template").html())
@@ -30,6 +31,7 @@ define([
         tileSetsEl: null,
         renameButtonEl: null,
         tileSelectorEl: null,
+        tileSelectorMarkerEl: null,
 
         /* The currently selected TileSet index. */
         selectedTileSetIndex: null,
@@ -37,11 +39,14 @@ define([
         /* The currently selected Tile in the TileSet index. */
         selectedTileIndex: null,
 
-        initialize: function () {
+        initialize: function (options) {
+            this.aggregator = options.aggregator;
+
             this.editorView = new TileSetEditorView();
             this.tileSetsEl = this.$(".tile-set-manager-tile-sets");
             this.renameButtonEl = this.$(".tile-set-manager-rename-button");
             this.tileSelectorEl = this.$(".tile-set-manager-tile-selector");
+            this.tileSelectorMarkerEl = $("<div>");
 
             this.listenTo(this.model, "change:tileSets", this.render);
 
@@ -135,14 +140,13 @@ define([
                 var tileIndex = +el.attr("data-index");
                 var tileEls = this.tileSelectorEl.children();
 
-                // Remove old selected if it exists.
-                if (this.selectedTileIndex !== null) {
-                    tileEls.eq(this.selectedTileIndex).empty();
-                }
-
-                var tileSelectorMarkerEl = $("<div>");
-                tileEls.eq(tileIndex).append(tileSelectorMarkerEl);
                 this.selectedTileIndex = tileIndex;
+                tileEls.eq(tileIndex).append(this.tileSelectorMarkerEl.detach());
+
+                var map = this.model.get("map");
+                var tileSet = map.tileSets[this.selectedTileSetIndex];
+                var globalId = tileSet.firstGlobalId + tileIndex;
+                this.aggregator.trigger("change:tile", globalId);
             }
         }
     });
