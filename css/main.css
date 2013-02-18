@@ -20,6 +20,35 @@ em {
     right: 300px;
     top: 0;
     bottom: 0;
+    overflow: auto;
+}
+
+.map-editor-cells {
+    position: relative;
+    margin: 0 auto;
+    background: #909090;
+}
+
+.map-editor-cell-selector {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.map-editor-cell-selector > div {
+    position: absolute;
+}
+
+.map-editor-cell-selector > div > div {
+    width: 100%;
+    height: 100%;
+    background: #87ceeb;
+
+    -moz-opacity: .70;
+    -ms-filter: "alpha(opacity=70)";
+    filter: alpha(opacity=70);
+    filter: progid:DXImageTransform.Microsoft.Alpha(opacity=0.7);
+    opacity: .70;
 }
 
 .manager {
@@ -115,7 +144,7 @@ button.layer-manager-toolbar-remove-button {
 }
 
 .layer-manager-layers li.selected {
-    background: #eee;
+    background: #87ceeb;
 }
 
 .layer-manager-layers li input {

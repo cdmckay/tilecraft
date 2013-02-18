@@ -1,11 +1,13 @@
 define([
     "jquery",
     "backbone",
+    "handlebars",
     "tmxjs/doodad-group",
     "tmxjs/tile-layer"
 ], function (
     $,
     Backbone,
+    Handlebars,
     DoodadGroup,
     TileLayer
 ) {

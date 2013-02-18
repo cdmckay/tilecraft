@@ -1,12 +1,14 @@
 define([
     "jquery",
     "backbone",
+    "handlebars",
     "tmxjs/tile-set",
     "../models/tile-set-model",
     "../views/tile-set-editor-view"
 ], function (
     $,
     Backbone,
+    Handlebars,
     TileSet,
     TileSetModel,
     TileSetEditorView
@@ -77,6 +79,7 @@ define([
                 var tileSet = tileSets[this.selectedTileSetIndex];
                 $.each(tileSet.tiles, function (i, tile) {
                     var tileSetTileEl = $(view.templates.tileSetsTile({
+                        index: i,
                         x: tile.bounds.x,
                         y: tile.bounds.y,
                         w: tile.bounds.w,
@@ -90,12 +93,12 @@ define([
             return this;
         },
 
-        selectTileSet: function () {
+        selectTileSet: function (event) {
             var index = this.tileSetsEl.val();
             this.selectedTileSetIndex = index;
             this.render();
         },
-        renameTileSet: function () {
+        renameTileSet: function (event) {
             var index = this.selectedTileSetIndex;
             var name = this.model.get("map").tileSets[index].name;
             var result = prompt('Please enter the new Tile Set name:', name);
@@ -103,7 +106,7 @@ define([
                 this.model.setTileSetNameAt(index, result);
             }
         },
-        addTileSet: function () {
+        addTileSet: function (event) {
             var view = this;
             var map = this.model.get("map");
             var tileSet = new TileSet(map.getMaxGlobalId() + 1);
@@ -118,7 +121,7 @@ define([
                 });
 
         },
-        removeTileSet: function () {
+        removeTileSet: function (event) {
             var index = this.selectedTileSetIndex;
             if (index !== null) {
                 this.model.removeTileSetAt(index);
@@ -127,9 +130,9 @@ define([
             }
         },
         selectTile: function (event) {
-            if (event.target !== event.currentTarget) {
-                var el = $(event.target);
-                var tileIndex = el.prevAll().length;
+            var el = $(event.target);
+            if (el.parent().hasClass("tile-set-manager-tile-selector")) {
+                var tileIndex = +el.attr("data-index");
                 var tileEls = this.tileSelectorEl.children();
 
                 // Remove old selected if it exists.
@@ -137,7 +140,8 @@ define([
                     tileEls.eq(this.selectedTileIndex).empty();
                 }
 
-                tileEls.eq(tileIndex).append($("<div>"));
+                var tileSelectorMarkerEl = $("<div>");
+                tileEls.eq(tileIndex).append(tileSelectorMarkerEl);
                 this.selectedTileIndex = tileIndex;
             }
         }
