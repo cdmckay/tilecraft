@@ -15,7 +15,7 @@ define([
         events: {
             "click .layer-manager-layers-item": "selectLayer",
             "dblclick .layer-manager-layers-item": "renameLayer",
-            "click .layer-manager-layers-item input": "toggleVisible",
+            "click .layer-manager-layers-item input": "toggleLayerVisible",
             "click .layer-manager-toolbar-add-button": "addTileLayer",
             "click .layer-manager-toolbar-up-button": "raiseLayer",
             "click .layer-manager-toolbar-down-button": "lowerLayer",
@@ -23,6 +23,7 @@ define([
             "click .layer-manager-toolbar-remove-button": "removeLayer"
         },
 
+        aggregator: null,
         templates: {
             layersItem: Handlebars.compile($("#layers-item-template").html())
         },
@@ -31,7 +32,9 @@ define([
         /* The currently selected Layer index. */
         selectedIndex: null,
 
-        initialize: function () {
+        initialize: function (options) {
+            this.aggregator = options.aggregator;
+
             this.layersEl = this.$(".layer-manager-layers");
 
             this.listenTo(this.model, "change:layers", this.render);
@@ -78,6 +81,9 @@ define([
 
             els.eq(index).addClass("selected");
             this.selectedIndex = index;
+
+            // Trigger event in the aggregator.
+            this.aggregator.trigger("change:select-layer", index);
         },
         renameLayer: function () {
             var index = this.selectedIndex;
@@ -87,12 +93,15 @@ define([
                 this.model.setLayerNameAt(index, result);
             }
         },
-        toggleVisible: function (event) {
+        toggleLayerVisible: function (event) {
             var el = $(event.currentTarget);
             var index = el.parent().prevAll().length;
             this.model.setLayerVisibleAt(index, el.prop("checked"));
             event.preventDefault();
             event.stopPropagation();
+
+            // Trigger event in the aggregator.
+            this.aggregator.trigger("change:toggle-layer-visible", index);
         },
         addTileLayer: function () {
             var tileLayers = this.model.getTileLayers();
@@ -102,6 +111,10 @@ define([
             );
             this.model.insertLayerAt(0, layer);
             this.selectedIndex = 0;
+
+            // Trigger events in the aggregator.
+            this.aggregator.trigger("change:add-layer", 0);
+            this.aggregator.trigger("change:select-layer", this.selectedIndex);
         },
         addDoodadGroup: function () {
             var doodadGroups = this.model.getDoodadGroups();
@@ -143,6 +156,10 @@ define([
                 this.model.removeLayerAt(index);
                 var layerCount = this.model.get("map").layers.length;
                 this.selectedIndex = layerCount === 0 ? null : Math.min(index, layerCount - 1);
+
+                // Trigger events in the aggregator.
+                this.aggregator.trigger("change:remove-layer", index);
+                this.aggregator.trigger("change:select-layer", this.selectedIndex);
             }
         }
     });

@@ -2,11 +2,13 @@ define([
     "jquery",
     "backbone",
     "handlebars",
+    "tmxjs/cell",
     "tmxjs/util/string-util"
 ], function (
     $,
     Backbone,
     Handlebars,
+    Cell,
     StringUtil
 ) {
     return Backbone.View.extend({
@@ -25,6 +27,12 @@ define([
         cellSelectorEl: null,
         cellSelectorMarkerEl: null,
 
+        /* The currently selected Layer index. */
+        selectedLayerIndex: null,
+
+        /* The currently selected Tile global id. */
+        selectedTileGlobalId: null,
+
         /* The currently selected Cell index. */
         selectedIndex: null,
 
@@ -37,12 +45,18 @@ define([
             this.generateCellSelectorCells();
 
             this.listenTo(this.model, "change:layers", this.render);
-            this.listenTo(this.aggregator, "change:tile", this.setCellSelectorMarker);
+            this.listenTo(this.aggregator, "change:select-layer", this.setSelectedLayerIndex);
+            this.listenTo(this.aggregator, "change:select-tile", this.setSelectedTileGlobalId);
 
             this.render();
         },
         render: function () {
             var map = this.model.get("map");
+
+            // This is for the case where a Layer has been added via the model.
+            if (this.selectedLayerIndex === null && map.layers.length) {
+                this.selectedLayerIndex = 0;
+            }
 
             this.cellSelectorEl.detach();
 
@@ -54,29 +68,14 @@ define([
             this.cellsEl.append(this.cellSelectorEl);
         },
 
-        showCellSelector: function () {
-            this.cellSelectorMarkerEl.show();
+        setSelectedLayerIndex: function (index) {
+            this.selectedLayerIndex = index;
         },
-        hideCellSelector: function () {
-            this.cellSelectorMarkerEl.hide();
-        },
-        highlightCell: function (event) {
-            var el = $(event.target);
-            if (el.parent().hasClass("map-editor-cell-selector")) {
-                var index = +el.attr("data-index");
-                var cellEls = this.cellSelectorEl.children();
+        setSelectedTileGlobalId: function (globalId) {
+            this.selectedTileGlobalId = globalId;
 
-                this.selectedIndex = index;
-                cellEls.eq(index).append(this.cellSelectorMarkerEl.detach());
-            }
-        },
-        selectCell: function (event) {
-
-        },
-        setCellSelectorMarker: function (globalId) {
-            var map = this.model.get("map");
-            var tileSet = map.findTileSet(globalId);
-            var tile = tileSet.tiles[globalId - tileSet.firstGlobalId];
+            // Also set the cell selector marker image.
+            var tile = this.model.get("map").findTile(globalId);
             this.cellSelectorMarkerEl.css({
                 "background": StringUtil.format(
                     "url({0}) no-repeat -{1}px -{2}px",
@@ -86,7 +85,54 @@ define([
                 )
             });
         },
+        showCellSelector: function () {
+            // Can't select a cell if there are no layers.
+            if (this.selectedLayerIndex === null) {
+                return;
+            }
 
+            this.cellSelectorMarkerEl.show();
+        },
+        hideCellSelector: function () {
+            // Can't select a cell if there are no layers.
+            if (this.selectedLayerIndex === null) {
+                return;
+            }
+
+            this.cellSelectorMarkerEl.hide();
+        },
+        highlightCell: function (event) {
+            // Can't select a cell if there are no layers.
+            if (this.selectedLayerIndex === null) {
+                return;
+            }
+
+            var el = $(event.target);
+            if (el.parent().hasClass("map-editor-cell-selector")) {
+                var index = parseInt(el.attr("data-index"));
+                var cellEls = this.cellSelectorEl.children();
+
+                this.selectedIndex = index;
+                cellEls.eq(index).append(this.cellSelectorMarkerEl.detach());
+            }
+        },
+        selectCell: function (event) {
+            // Can't select a cell if there are no layers.
+            if (this.selectedLayerIndex === null) {
+                return;
+            }
+
+            var el = $(event.target).parent();
+            if (el.parent().hasClass("map-editor-cell-selector")) {
+                debugger;
+                var index = parseInt(el.attr("data-index"));
+
+                var map = this.model.get("map");
+                var layer = map.layers[this.selectedLayerIndex];
+                var tile = map.findTile(this.selectedTileGlobalId);
+                layer.cells[index] = new Cell(tile);
+            }
+        },
         generateCellSelectorCells: function () {
             var map = this.model.get("map");
             for (var j = 0; j < map.bounds.h; j++) {

@@ -36,7 +36,7 @@ define([
         /* The currently selected TileSet index. */
         selectedTileSetIndex: null,
 
-        /* The currently selected Tile in the TileSet index. */
+        /* The currently selected Tile index. */
         selectedTileIndex: null,
 
         initialize: function (options) {
@@ -137,16 +137,17 @@ define([
         selectTile: function (event) {
             var el = $(event.target);
             if (el.parent().hasClass("tile-set-manager-tile-selector")) {
-                var tileIndex = +el.attr("data-index");
+                var tileIndex = parseInt(el.attr("data-index"));
                 var tileEls = this.tileSelectorEl.children();
 
                 this.selectedTileIndex = tileIndex;
                 tileEls.eq(tileIndex).append(this.tileSelectorMarkerEl.detach());
 
+                // Trigger event in the aggregator.
                 var map = this.model.get("map");
                 var tileSet = map.tileSets[this.selectedTileSetIndex];
                 var globalId = tileSet.firstGlobalId + tileIndex;
-                this.aggregator.trigger("change:tile", globalId);
+                this.aggregator.trigger("change:select-tile", globalId);
             }
         }
     });
