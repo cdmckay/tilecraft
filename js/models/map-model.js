@@ -11,6 +11,7 @@ define(["underscore", "backbone"], function (_, Backbone) {
         removeLayerAt: function (index) {
             var layer = this.get("map").removeLayerAt(index);
             this.trigger("change:layers");
+            this.trigger("change:layers:remove-layer", index);
             return layer;
         },
         setLayerNameAt: function (index, name) {
@@ -20,7 +21,7 @@ define(["underscore", "backbone"], function (_, Backbone) {
         setLayerVisibleAt: function (index, visible) {
             this.get("map").layers[index].visible = visible;
             this.trigger("change:layers");
-            this.trigger("change:layers-visible", index, visible)
+            this.trigger("change:layers:change-layer-visible", index, visible)
         },
         getTileLayers: function () {
             return this.get("map").getTileLayers();

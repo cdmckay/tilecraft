@@ -46,7 +46,8 @@ define([
             this.cellSelectorMarkerEl = $("<div>");
             this.cellLayersEl = this.cellsEl.children(".map-editor-cell-layers");
 
-            this.listenTo(this.model, "change:layers-visible", this.setCellLayerElVisible);
+            this.listenTo(this.model, "change:layers:remove-layer", this.removeCellLayerEl);
+            this.listenTo(this.model, "change:layers:change-layer-visible", this.changeCellLayerElVisible);
             this.listenTo(this.aggregator, "change:select-layer", this.setSelectedLayerIndex);
             this.listenTo(this.aggregator, "change:select-tile", this.setSelectedTileGlobalId);
 
@@ -102,7 +103,10 @@ define([
                 )
             });
         },
-        setCellLayerElVisible: function(index, visible) {
+        removeCellLayerEl: function (index) {
+            this.cellLayersEl.children().eq(index).remove();
+        },
+        changeCellLayerElVisible: function (index, visible) {
             this.cellLayersEl.children().eq(index).css("display", visible ? "block" : "none");
         },
 
