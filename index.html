@@ -11,6 +11,7 @@
     <div id="map-editor">
         <div class="map-editor-cells">
             <div class="map-editor-cell-selector"></div>
+            <div class="map-editor-cell-layers"></div>
         </div>
     </div>
     <div id="layer-manager" class="manager">
@@ -77,8 +78,11 @@
             </form>
         </div>
     </div>
+    <script id="cell-template" type="text/x-handlebars-template">
+        <div data-index="{{ index }}" style='left: {{ i }}px; top: {{ j }}px; width: {{ w }}px; height: {{ h }}px;'></div>
+    </script>
     <script id="cell-selector-cell-template" type="text/x-handlebars-template">
-        <div data-index="{{ index }}" style='left: {{ x }}px; top: {{ y }}px; width: {{ w }}px; height: {{ h }}px;'></div>
+        <div data-index="{{ index }}" style='left: {{ i }}px; top: {{ j }}px; width: {{ w }}px; height: {{ h }}px;'></div>
     </script>
     <script id="layers-item-template" type="text/x-handlebars-template">
         <li class="layer-manager-layers-item">
