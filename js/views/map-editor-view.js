@@ -46,8 +46,9 @@ define([
             this.cellSelectorMarkerEl = $("<div>");
             this.cellLayersEl = this.cellsEl.children(".map-editor-cell-layers");
 
-            this.listenTo(this.model, "change:layers:remove-layer", this.removeCellLayerEl);
-            this.listenTo(this.model, "change:layers:change-layer-visible", this.changeCellLayerElVisible);
+            this.listenTo(this.model, "change:layers:insert-layer", this.insertCellLayerElAt);
+            this.listenTo(this.model, "change:layers:remove-layer", this.removeCellLayerElAt);
+            this.listenTo(this.model, "change:layers:change-layer-visible", this.changeCellLayerElVisibleAt);
             this.listenTo(this.aggregator, "change:select-layer", this.setSelectedLayerIndex);
             this.listenTo(this.aggregator, "change:select-tile", this.setSelectedTileGlobalId);
 
@@ -65,6 +66,7 @@ define([
                 width: map.bounds.w * map.tileInfo.w,
                 height: map.bounds.h * map.tileInfo.h
             });
+
             this.generateCellSelectorCellEls();
             this.generateCellLayerEls();
         },
@@ -73,7 +75,7 @@ define([
             var layer = layers[this.selectedLayerIndex];
             var cell = layer.cells[index];
             if (cell) {
-                var cellLayerEl = this.cellLayersEl.children().eq(this.selectedLayerIndex);
+                var cellLayerEl = this.getCellLayerElAt(this.selectedLayerIndex);
                 var cellEl = cellLayerEl.children().eq(index);
                 cellEl.css({
                     "background": StringUtil.format(
@@ -103,11 +105,26 @@ define([
                 )
             });
         },
-        removeCellLayerEl: function (index) {
-            this.cellLayersEl.children().eq(index).remove();
+        insertCellLayerElAt: function (index) {
+            var layers = this.model.get("map").layers;
+            var layer = layers[index];
+            var cellLayerEl = this.generateCellLayerEl(layer);
+            var cellLayerElsCount = this.cellLayersEl.children().length;
+            if (cellLayerElsCount === 0 || cellLayerElsCount === index) {
+                this.cellLayersEl.prepend(cellLayerEl);
+            } else {
+                this.getCellLayerElAt(index).after(cellLayerEl);
+            }
         },
-        changeCellLayerElVisible: function (index, visible) {
-            this.cellLayersEl.children().eq(index).css("display", visible ? "block" : "none");
+        removeCellLayerElAt: function (index) {
+            this.getCellLayerElAt(index).remove();
+        },
+        changeCellLayerElVisibleAt: function (index, visible) {
+            this.getCellLayerElAt(index).css("display", visible ? "block" : "none");
+        },
+        getCellLayerElAt: function (index) {
+            var cellLayerEls = this.cellLayersEl.children();
+            return cellLayerEls.length ? cellLayerEls.eq(cellLayerEls.length - index - 1) : null;
         },
 
         showCellSelector: function () {
@@ -159,59 +176,63 @@ define([
             }
         },
 
+        generateCellLayerEl: function (layer) {
+            var map = this.model.get("map");
+            var cellLayerEl = $("<div>", {
+                class: "map-editor-cell-layer",
+                style: "display: " + (layer.visible ? "block" : "none") + ";"
+            });
+            for (var j = 0; j < map.bounds.h; j++) {
+                for (var i = 0; i < map.bounds.w; i++) {
+                    var index = j * map.bounds.w + i;
+                    var cellEl = $(this.templates.cell({
+                        index: index,
+                        i: i * map.tileInfo.w,
+                        j: j * map.tileInfo.h,
+                        w: map.tileInfo.w,
+                        h: map.tileInfo.h
+                    }));
+                    var cell = layer.cells[index];
+                    if (cell) {
+                        cellEl.css({
+                            "background": StringUtil.format(
+                                "url({0}) no-repeat -{1}px -{2}px",
+                                cell.tile.imageInfo.url,
+                                cell.tile.bounds.x,
+                                cell.tile.bounds.y
+                            )
+                        });
+                    }
+                    cellLayerEl.append(cellEl);
+                } // end for
+            } // end for
+            return cellLayerEl;
+        },
         generateCellLayerEls: function () {
             this.cellLayersEl.detach().empty();
-
             var view = this;
             var map = this.model.get("map");
             $.each(map.layers, function (li, layer) {
-                var cellLayerEl = $("<div>", { class: "map-editor-cell-layer" });
-                for (var j = 0; j < map.bounds.h; j++) {
-                    for (var i = 0; i < map.bounds.w; i++) {
-                        var index = j * map.bounds.w + i;
-                        var cellEl = $(view.templates.cell({
-                            index: index,
-                            i: i * map.tileInfo.w,
-                            j: j * map.tileInfo.h,
-                            w: map.tileInfo.w,
-                            h: map.tileInfo.h
-                        }));
-                        var cell = layer.cells[index];
-                        if (cell) {
-                            cellEl.css({
-                                "background": StringUtil.format(
-                                    "url({0}) no-repeat -{1}px -{2}px",
-                                    cell.tile.imageInfo.url,
-                                    cell.tile.bounds.x,
-                                    cell.tile.bounds.y
-                                )
-                            });
-                        }
-                        cellLayerEl.append(cellEl);
-                    } // end for
-                } // end for
-                view.cellLayersEl.append(cellLayerEl);
+                var cellLayerEl = view.generateCellLayerEl(layer);
+                view.cellLayersEl.prepend(cellLayerEl);
             });
-
             this.cellsEl.prepend(this.cellLayersEl);
         },
         generateCellSelectorCellEls: function () {
             this.cellSelectorEl.detach().empty();
-
             var map = this.model.get("map");
             for (var j = 0; j < map.bounds.h; j++) {
                 for (var i = 0; i < map.bounds.w; i++) {
-                    var cellSelectorCellEl = this.templates.cellSelectorCell({
+                    var cellSelectorCellEl = $(this.templates.cellSelectorCell({
                         index: j * map.bounds.w + i,
                         i: i * map.tileInfo.w,
                         j: j * map.tileInfo.h,
                         w: map.tileInfo.w,
                         h: map.tileInfo.h
-                    });
+                    }));
                     this.cellSelectorEl.append(cellSelectorCellEl);
                 } // end for
             } // end for
-
             this.cellsEl.prepend(this.cellSelectorEl);
         }
     });
