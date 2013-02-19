@@ -3,6 +3,7 @@
     <words>
       <w>dblclick</w>
       <w>gunzip</w>
+      <w>mousedown</w>
       <w>mouseover</w>
       <w>onload</w>
       <w>onsubmit</w>

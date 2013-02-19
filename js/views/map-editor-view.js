@@ -16,7 +16,7 @@ define([
             "mouseenter .map-editor-cell-selector": "showCellSelector",
             "mouseleave .map-editor-cell-selector": "hideCellSelector",
             "mouseover .map-editor-cell-selector": "highlightCell",
-            "click .map-editor-cell-selector": "selectCell"
+            "mousedown .map-editor-cell-selector": "selectCell"
         },
 
         aggregator: null,
@@ -46,6 +46,7 @@ define([
             this.cellSelectorMarkerEl = $("<div>");
             this.cellLayersEl = this.cellsEl.children(".map-editor-cell-layers");
 
+            this.listenTo(this.model, "change:layers-visible", this.setCellLayerElVisible);
             this.listenTo(this.aggregator, "change:select-layer", this.setSelectedLayerIndex);
             this.listenTo(this.aggregator, "change:select-tile", this.setSelectedTileGlobalId);
 
@@ -101,6 +102,10 @@ define([
                 )
             });
         },
+        setCellLayerElVisible: function(index, visible) {
+            this.cellLayersEl.children().eq(index).css("display", visible ? "block" : "none");
+        },
+
         showCellSelector: function () {
             // Can't select a cell if there are no layers.
             if (this.selectedLayerIndex === null) {

@@ -99,9 +99,6 @@ define([
             this.model.setLayerVisibleAt(index, el.prop("checked"));
             event.preventDefault();
             event.stopPropagation();
-
-            // Trigger event in the aggregator.
-            this.aggregator.trigger("change:toggle-layer-visible", index);
         },
         addTileLayer: function () {
             var tileLayers = this.model.getTileLayers();
@@ -113,7 +110,6 @@ define([
             this.selectedIndex = 0;
 
             // Trigger events in the aggregator.
-            this.aggregator.trigger("change:add-layer", 0);
             this.aggregator.trigger("change:select-layer", this.selectedIndex);
         },
         addDoodadGroup: function () {
@@ -124,6 +120,9 @@ define([
             );
             this.model.insertLayerAt(0, layer);
             this.selectedIndex = 0;
+
+            // Trigger events in the aggregator.
+            this.aggregator.trigger("change:select-layer", this.selectedIndex);
         },
         raiseLayer: function () {
             var index = this.selectedIndex;
@@ -131,6 +130,9 @@ define([
                 var layer = this.model.removeLayerAt(index);
                 this.selectedIndex--;
                 this.model.insertLayerAt(this.selectedIndex, layer);
+
+                // Trigger events in the aggregator.
+                this.aggregator.trigger("change:select-layer", this.selectedIndex);
             }
         },
         lowerLayer: function () {
@@ -139,6 +141,9 @@ define([
                 var layer = this.model.removeLayerAt(index);
                 this.selectedIndex++;
                 this.model.insertLayerAt(this.selectedIndex, layer);
+
+                // Trigger events in the aggregator.
+                this.aggregator.trigger("change:select-layer", this.selectedIndex);
             }
         },
         duplicateLayer: function () {
@@ -148,6 +153,9 @@ define([
                 var duplicateLayer = layer.clone();
                 duplicateLayer.name = "Copy of " + duplicateLayer.name;
                 this.model.insertLayerAt(index, duplicateLayer);
+
+                // Trigger events in the aggregator.
+                this.aggregator.trigger("change:select-layer", this.selectedIndex);
             }
         },
         removeLayer: function () {
@@ -158,7 +166,6 @@ define([
                 this.selectedIndex = layerCount === 0 ? null : Math.min(index, layerCount - 1);
 
                 // Trigger events in the aggregator.
-                this.aggregator.trigger("change:remove-layer", index);
                 this.aggregator.trigger("change:select-layer", this.selectedIndex);
             }
         }
