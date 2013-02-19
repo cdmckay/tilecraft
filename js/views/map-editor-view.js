@@ -21,11 +21,13 @@ define([
 
         aggregator: null,
         templates: {
+            cell: Handlebars.compile($("#cell-template").html()),
             cellSelectorCell: Handlebars.compile($("#cell-selector-cell-template").html())
         },
         cellsEl: null,
         cellSelectorEl: null,
         cellSelectorMarkerEl: null,
+        cellLayersEl: null,
 
         /* The currently selected Layer index. */
         selectedLayerIndex: null,
@@ -42,9 +44,8 @@ define([
             this.cellsEl = this.$(".map-editor-cells");
             this.cellSelectorEl = this.cellsEl.children(".map-editor-cell-selector");
             this.cellSelectorMarkerEl = $("<div>");
-            this.generateCellSelectorCells();
+            this.cellLayersEl = this.cellsEl.children(".map-editor-cell-layers");
 
-            this.listenTo(this.model, "change:layers", this.render);
             this.listenTo(this.aggregator, "change:select-layer", this.setSelectedLayerIndex);
             this.listenTo(this.aggregator, "change:select-tile", this.setSelectedTileGlobalId);
 
@@ -58,14 +59,29 @@ define([
                 this.selectedLayerIndex = 0;
             }
 
-            this.cellSelectorEl.detach();
-
-            this.cellsEl.empty().css({
+            this.cellsEl.css({
                 width: map.bounds.w * map.tileInfo.w,
                 height: map.bounds.h * map.tileInfo.h
             });
-
-            this.cellsEl.append(this.cellSelectorEl);
+            this.generateCellSelectorCellEls();
+            this.generateCellLayerEls();
+        },
+        renderCellAt: function (index) {
+            var layers = this.model.get("map").layers;
+            var layer = layers[this.selectedLayerIndex];
+            var cell = layer.cells[index];
+            if (cell) {
+                var cellLayerEl = this.cellLayersEl.children().eq(this.selectedLayerIndex);
+                var cellEl = cellLayerEl.children().eq(index);
+                cellEl.css({
+                    "background": StringUtil.format(
+                        "url({0}) no-repeat -{1}px -{2}px",
+                        cell.tile.imageInfo.url,
+                        cell.tile.bounds.x,
+                        cell.tile.bounds.y
+                    )
+                });
+            }
         },
 
         setSelectedLayerIndex: function (index) {
@@ -118,35 +134,76 @@ define([
         },
         selectCell: function (event) {
             // Can't select a cell if there are no layers.
-            if (this.selectedLayerIndex === null) {
+            if (this.selectedLayerIndex === null || this.selectedTileGlobalId === null) {
                 return;
             }
 
             var el = $(event.target).parent();
             if (el.parent().hasClass("map-editor-cell-selector")) {
-                debugger;
                 var index = parseInt(el.attr("data-index"));
 
                 var map = this.model.get("map");
                 var layer = map.layers[this.selectedLayerIndex];
                 var tile = map.findTile(this.selectedTileGlobalId);
                 layer.cells[index] = new Cell(tile);
+                this.renderCellAt(index);
             }
         },
-        generateCellSelectorCells: function () {
+
+        generateCellLayerEls: function () {
+            this.cellLayersEl.detach().empty();
+
+            var view = this;
+            var map = this.model.get("map");
+            $.each(map.layers, function (li, layer) {
+                var cellLayerEl = $("<div>", { class: "map-editor-cell-layer" });
+                for (var j = 0; j < map.bounds.h; j++) {
+                    for (var i = 0; i < map.bounds.w; i++) {
+                        var index = j * map.bounds.w + i;
+                        var cellEl = $(view.templates.cell({
+                            index: index,
+                            i: i * map.tileInfo.w,
+                            j: j * map.tileInfo.h,
+                            w: map.tileInfo.w,
+                            h: map.tileInfo.h
+                        }));
+                        var cell = layer.cells[index];
+                        if (cell) {
+                            cellEl.css({
+                                "background": StringUtil.format(
+                                    "url({0}) no-repeat -{1}px -{2}px",
+                                    cell.tile.imageInfo.url,
+                                    cell.tile.bounds.x,
+                                    cell.tile.bounds.y
+                                )
+                            });
+                        }
+                        cellLayerEl.append(cellEl);
+                    } // end for
+                } // end for
+                view.cellLayersEl.append(cellLayerEl);
+            });
+
+            this.cellsEl.prepend(this.cellLayersEl);
+        },
+        generateCellSelectorCellEls: function () {
+            this.cellSelectorEl.detach().empty();
+
             var map = this.model.get("map");
             for (var j = 0; j < map.bounds.h; j++) {
                 for (var i = 0; i < map.bounds.w; i++) {
                     var cellSelectorCellEl = this.templates.cellSelectorCell({
                         index: j * map.bounds.w + i,
-                        x: i * map.tileInfo.w,
-                        y: j * map.tileInfo.h,
+                        i: i * map.tileInfo.w,
+                        j: j * map.tileInfo.h,
                         w: map.tileInfo.w,
                         h: map.tileInfo.h
                     });
                     this.cellSelectorEl.append(cellSelectorCellEl);
                 } // end for
             } // end for
+
+            this.cellsEl.prepend(this.cellSelectorEl);
         }
     });
 });

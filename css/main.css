@@ -51,6 +51,17 @@ em {
     opacity: .70;
 }
 
+.map-editor-cell-layer {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.map-editor-cell-layer > div {
+    position: absolute;
+}
+
+
 .manager {
     background-color: #f0f0f0;
     padding: 4px;
