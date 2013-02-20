@@ -106,8 +106,8 @@ define([
                 "Tile Layer " + (tileLayers.length + 1),
                 this.model.get("map").bounds.clone()
             );
-            this.model.insertLayerAt(0, layer);
             this.selectedIndex = 0;
+            this.model.insertLayerAt(0, layer);
 
             // Trigger events in the aggregator.
             this.aggregator.trigger("change:select-layer", this.selectedIndex);
@@ -118,8 +118,8 @@ define([
                 "Object Group " + (doodadGroups.length + 1),
                 this.model.get("map").bounds.clone()
             );
-            this.model.insertLayerAt(0, layer);
             this.selectedIndex = 0;
+            this.model.insertLayerAt(0, layer);
 
             // Trigger events in the aggregator.
             this.aggregator.trigger("change:select-layer", this.selectedIndex);
@@ -161,9 +161,9 @@ define([
         removeLayer: function () {
             var index = this.selectedIndex;
             if (index !== null) {
+                var newLayerCount = this.model.get("map").layers.length - 1;
+                this.selectedIndex = newLayerCount === 0 ? null : Math.min(index, newLayerCount - 1);
                 this.model.removeLayerAt(index);
-                var layerCount = this.model.get("map").layers.length;
-                this.selectedIndex = layerCount === 0 ? null : Math.min(index, layerCount - 1);
 
                 // Trigger events in the aggregator.
                 this.aggregator.trigger("change:select-layer", this.selectedIndex);
