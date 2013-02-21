@@ -1,10 +1,9 @@
-define(["jquery", "./tile", "./util/string-util"], function ($, Tile, S) {
+define(["jquery", "./tile", "./util/util"], function ($, Tile, Util) {
     var TileSet = function (firstGlobalId) {
         this.firstGlobalId = firstGlobalId || 1;
-        this.dir = null;
         this.name = null;
         this.tileInfo = { w: 0, h: 0, spacing: 0, margin: 0 };
-        this.imageInfo = { source: null, url: null, w: 0, h: 0 };
+        this.imageInfo = { source: null, w: 0, h: 0 };
         this.tiles = [];
         this.properties = {};
     };
@@ -31,29 +30,74 @@ define(["jquery", "./tile", "./util/string-util"], function ($, Tile, S) {
         return this.tiles.length - 1;
     };
 
+    /**
+     * Generate tiles based on tile width, tile height, image width and image height.
+     * If a tile already exists, its bounds and image information will be overwritten.
+     */
     TileSet.prototype.generateTiles = function () {
-        this.tiles.length = 0;
-
         var tileInfo = this.tileInfo;
         var imageInfo = this.imageInfo;
         for (var j = tileInfo.margin; j < imageInfo.h; j += tileInfo.h + tileInfo.spacing) {
             for (var i = tileInfo.margin; i < imageInfo.w; i += tileInfo.w + tileInfo.spacing) {
-                var tile = new Tile();
+                var id = j * tileInfo.w + i;
+                var tile = this.getTileAt(id) || new Tile();
                 tile.imageInfo = imageInfo;
                 tile.bounds.x = i;
                 tile.bounds.y = j;
                 tile.bounds.w = tileInfo.w;
                 tile.bounds.h = tileInfo.h;
-                this.addTile(tile);
+                if (!tile.id) this.addTile(tile);
             } // end for
         } // end for
+    };
+
+    TileSet.prototype.toXML = function (xml, options) {
+        var tileSetEl = $("<tileset>", xml).attr({
+            firstgid: this.firstGlobalId,
+            name: this.name
+        });
+        if (tileSetEl.source) {
+            tileSetEl.attr("source", tileSetEl.source);
+        } else {
+            // Attributes
+            tileSetEl.attr({
+                tilewidth: this.tileInfo.w,
+                tileheight: this.tileInfo.h,
+                spacing: this.tileInfo.spacing,
+                margin: this.tileInfo.margin
+            });
+
+            // Image
+            var imageEl = $("<image>", xml).attr({
+                source: this.imageInfo.source,
+                width: this.imageInfo.w,
+                height: this.imageInfo.h
+            });
+            tileSetEl.append(imageEl);
+
+            // Properties
+            if (Util.size(this.properties)) {
+                var propertiesEl = $("<properties>", xml);
+                $.each(this.properties, function (k, v) {
+                    var propertyEl = $("<property>", xml).attr({ name: k, value: v });
+                    propertiesEl.append(propertyEl);
+                });
+                tileSetEl.append(propertiesEl);
+            }
+
+            // Tiles
+            $.each(this.tiles, function (ti, tile) {
+                var tileEl = tile.toXML(xml, options);
+                tileSetEl.append(tileEl);
+            });
+        }
+        return tileSetEl;
     };
 
     TileSet.fromElement = function (element, options) {
         var tileSetElement = $(element);
         var firstGlobalId = parseInt(tileSetElement.attr("firstgid"));
         var tileSet = new TileSet(firstGlobalId);
-        tileSet.dir = options.dir;
 
         var extract = function (e) {
             tileSet.name = e.attr("name");
@@ -72,12 +116,9 @@ define(["jquery", "./tile", "./util/string-util"], function ($, Tile, S) {
             }
             tileSet.imageInfo = {
                 source: imageSource,
-                url: (S.startsWith(imageSource, "http") ? "" : options.dir + "/") + imageSource,
                 w: parseInt(image.attr("width")) || 0,
                 h: parseInt(image.attr("height")) || 0
             };
-
-            tileSet.generateTiles();
 
             e.children("tiles").each(function () {
                 var tile = Tile.fromElement(this, options);
@@ -89,12 +130,14 @@ define(["jquery", "./tile", "./util/string-util"], function ($, Tile, S) {
                     throw new Error("Invalid (non-consecutive) tile id: " + tile.id);
                 }
             });
+
+            tileSet.generateTiles();
         };
 
         tileSet.source = tileSetElement.attr("source");
         var promise = $.Deferred();
         if (tileSet.source) {
-            $.get((S.startsWith(tileSet.source, "http") ? "" : options.dir + "/") + tileSet.source, {}, null, "xml")
+            $.get((Util.startsWith(tileSet.source, "http") ? "" : options.dir + "/") + tileSet.source, {}, null, "xml")
                 .done(function (data) {
                     var external = $(data).find("tileset");
                     extract(external);

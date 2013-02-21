@@ -1,23 +1,36 @@
 define([
     "jquery",
+    "zlib",
     "./cell",
     "./layer",
     "./util/base64",
-    "./util/rectangle"
+    "./util/rectangle",
+    "./util/util"
 ], function (
     $,
+    Zlib,
     Cell,
     Layer,
     Base64,
-    Rectangle
+    Rectangle,
+    Util
 ) {
     var TileLayer = function(name, bounds) {
         Layer.call(this, name, bounds);
+        this.format = TileLayer.Format.XML;
         this.cells = new Array(this.bounds.w * this.bounds.h);
         this.tileProperties = {};
     };
     TileLayer.prototype = new Layer();
     TileLayer.prototype.constructor = TileLayer;
+
+    TileLayer.Format = {
+        XML: "xml",
+        BASE64: "base64",
+        BASE64_GZIP: "base64gzip",
+        BASE64_ZLIB: "base64zlib",
+        CSV: "csv"
+    };
 
     TileLayer.prototype.rotate = function (angle) {
         var newBounds;
@@ -112,6 +125,87 @@ define([
         return layer;
     };
 
+    TileLayer.prototype.toXML = function (xml, options) {
+        var tileLayerEl = $("<layer>", xml).attr({
+            name: this.name,
+            width: this.bounds.w,
+            height: this.bounds.h
+        });
+
+        // Properties
+        if (Util.size(this.properties)) {
+            var propertiesEl = $("<properties>", xml);
+            $.each(this.properties, function (k, v) {
+                var propertyEl = $("<property>", xml).attr({ name: k, value: v });
+                propertiesEl.append(propertyEl);
+            });
+            tileLayerEl.append(propertiesEl);
+        }
+
+        var compression, encoding;
+        switch (this.format) {
+            case TileLayer.Format.XML:
+                break;
+            case TileLayer.Format.BASE64:
+                encoding = "base64";
+                break;
+            case TileLayer.Format.BASE64_GZIP:
+                encoding = "base64";
+                compression = "gzip";
+                break;
+            case TileLayer.Format.BASE64_ZLIB:
+                encoding = "base64";
+                compression = "zlib";
+                break;
+            case TileLayer.Format.CSV:
+                encoding = "csv";
+                break;
+            default:
+                throw new Error("Unsupported format: " + this.format);
+        }
+
+        // TODO Deal with flipped bits.
+        var dataEl = $("<data>", xml);
+        if (compression) dataEl.attr("compression", compression);
+        if (encoding) dataEl.attr("encoding", encoding);
+        if (this.format === TileLayer.Format.XML) {
+            $.each(this.cells, function (ci, cell) {
+                var cellEl = $("<tile>", xml).attr("gid", cell.tile.getGlobalId());
+                dataEl.append(cellEl);
+            });
+        } else if (this.format === TileLayer.Format.CSV) {
+            var globalIds = $.map(this.cells, function (cell) {
+                return cell.tile.getGlobalId();
+            });
+            dataEl.text(globalIds.join(","));
+        } else {
+            var bytes = [];
+            $.each(this.cells, function (ci, cell) {
+                var globalId = cell.tile.getGlobalId();
+                bytes.push((globalId >> 0) & 255);
+                bytes.push((globalId >> 8) & 255);
+                bytes.push((globalId >> 16) & 255);
+                bytes.push((globalId >> 24) & 255);
+            });
+            var content;
+            switch (this.format) {
+                case TileLayer.Format.BASE64:
+                    content = Base64.encode(bytes);
+                    break;
+                case TileLayer.Format.BASE64_GZIP:
+                    content = Base64.encode(new Zlib.Gzip(bytes).compress());
+                    break;
+                case TileLayer.Format.BASE64_ZLIB:
+                    content = Base64.encode(new Zlib.Deflate(bytes).compress());
+                    break;
+            }
+            dataEl.text(content);
+        }
+        tileLayerEl.append(dataEl);
+
+        return tileLayerEl;
+    };
+
     TileLayer.fromElement = function (element, map, options) {
         var layerElement = $(element);
         var tileLayer = new TileLayer();
@@ -128,45 +222,55 @@ define([
             tileLayer.properties[$(this).attr("name")] = $(this).attr("value");
         });
 
-        layerElement.find("data:first").each(function () {
-            var handleBase64 = function (options) {
-                var decompress = function (data) { return data };
-                var compression = $(this).attr("compression");
-                if (compression) {
-                    if (!options.compression[compression] || !options.compression[compression].decompress) {
-                        throw new Error("Could not find decompressor for compression: " + compression);
-                    }
-                    decompress = options.compression[compression].decompress;
+        var decodeBase64 = function (dataEl) {
+            var base64String = $.trim(dataEl.text());
+            var bytes = Base64.decode(base64String);
+            var compression = dataEl.attr("compression");
+            if (compression) {
+                tileLayer.format += compression;
+                switch (compression) {
+                    case "gzip":
+                        bytes = new Zlib.Gunzip(bytes).decompress();
+                        break;
+                    case "zlib":
+                        bytes = new Zlib.Inflate(bytes).decompress();
+                        break;
+                    default:
+                        throw new Error("Unsupported format: " + tileLayer.format);
                 }
-                var flippedGlobalIds = [];
-                var bytes = decompress(Base64.decode($.trim($(this).text())));
-                for (var n = 0; n < bytes.length; n += 4) {
-                    var flippedGlobalId = 0;
-                    flippedGlobalId += bytes[n + 0] << 0;
-                    flippedGlobalId += bytes[n + 1] << 8;
-                    flippedGlobalId += bytes[n + 2] << 16;
-                    flippedGlobalId += bytes[n + 3] << 24;
-                    flippedGlobalIds.push(flippedGlobalId);
-                }
-                return flippedGlobalIds;
-            };
-            var handleCSV = function (options) {
-                var flippedGlobalIds = [];
-                $.each($(this).text().split(","), function(n) {
-                    flippedGlobalIds.push(parseInt(this));
-                });
-                return flippedGlobalIds;
-            };
-
+            }
             var flippedGlobalIds = [];
-            var encoding = $(this).attr("encoding");
+            for (var n = 0; n < bytes.length; n += 4) {
+                var flippedGlobalId = 0;
+                flippedGlobalId += bytes[n + 0] << 0;
+                flippedGlobalId += bytes[n + 1] << 8;
+                flippedGlobalId += bytes[n + 2] << 16;
+                flippedGlobalId += bytes[n + 3] << 24;
+                flippedGlobalIds.push(flippedGlobalId);
+            }
+            return flippedGlobalIds;
+        };
+
+        var decodeCSV = function (dataEl) {
+            var flippedGlobalIds = [];
+            $.each(dataEl.text().split(","), function(n) {
+                flippedGlobalIds.push(parseInt(this));
+            });
+            return flippedGlobalIds;
+        };
+
+        layerElement.find("data:first").each(function () {
+            var dataEl = $(this);
+            var flippedGlobalIds = [];
+            var encoding = dataEl.attr("encoding");
             if (encoding) {
+                tileLayer.format = encoding;
                 switch (encoding) {
                     case "base64":
-                        flippedGlobalIds = handleBase64.call(this, options);
+                        flippedGlobalIds = decodeBase64(dataEl);
                         break;
                     case "csv":
-                        flippedGlobalIds = handleCSV.call(this, options);
+                        flippedGlobalIds = decodeCSV(dataEl);
                         break;
                     default:
                         throw new Error("Unsupported encoding: " + encoding);

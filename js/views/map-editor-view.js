@@ -3,13 +3,13 @@ define([
     "backbone",
     "handlebars",
     "tmxjs/cell",
-    "tmxjs/util/string-util"
+    "tmxjs/util/util"
 ], function (
     $,
     Backbone,
     Handlebars,
     Cell,
-    StringUtil
+    Util
 ) {
     return Backbone.View.extend({
         events: {
@@ -78,7 +78,7 @@ define([
                 var cellLayerEl = this.getCellLayerElAt(this.selectedLayerIndex);
                 var cellEl = cellLayerEl.children().eq(index);
                 cellEl.css({
-                    "background": StringUtil.format(
+                    "background": Util.format(
                         "url({0}) no-repeat -{1}px -{2}px",
                         cell.tile.imageInfo.url,
                         cell.tile.bounds.x,
@@ -97,7 +97,7 @@ define([
             // Also set the cell selector marker image.
             var tile = this.model.get("map").findTile(globalId);
             this.cellSelectorMarkerEl.css({
-                "background": StringUtil.format(
+                "background": Util.format(
                     "url({0}) no-repeat -{1}px -{2}px",
                     tile.imageInfo.url,
                     tile.bounds.x,
@@ -195,7 +195,7 @@ define([
                     var cell = layer.cells[index];
                     if (cell) {
                         cellEl.css({
-                            "background": StringUtil.format(
+                            "background": Util.format(
                                 "url({0}) no-repeat -{1}px -{2}px",
                                 cell.tile.imageInfo.url,
                                 cell.tile.bounds.x,

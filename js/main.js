@@ -7,8 +7,7 @@ require.config({
         "backbone": "lib/backbone",
         "handlebars": "lib/handlebars",
         "tmxjs": "lib/tmxjs",
-        "gunzip": "lib/gunzip.min",
-        "inflate": "lib/inflate.min"
+        "zlib": "lib/zlib.min"
     },
     shim: {
         "jquery-colorbox": { deps: ["jquery"] },
@@ -16,8 +15,7 @@ require.config({
         "underscore": { exports: "_" },
         "backbone": { exports: "Backbone", deps: ["underscore"] },
         "handlebars": { exports: "Handlebars" },
-        "gunzip": { exports: "Zlib.Gunzip" },
-        "inflate": { exports: "Zlib.Inflate" }
+        "zlib": { exports: "Zlib" }
     }
 });
 
@@ -28,8 +26,6 @@ require([
     "underscore",
     "backbone",
     "handlebars",
-    "gunzip",
-    "inflate",
     "tmxjs/map",
     "tmxjs/tile-layer",
     "tmxjs/tile-set",
@@ -46,8 +42,6 @@ require([
     _,
     Backbone,
     Handlebars,
-    Gunzip,
-    Inflate,
     Map,
     TileLayer,
     TileSet,
