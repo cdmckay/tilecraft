@@ -120,6 +120,7 @@ define([
                 "Tile Layer " + (tileLayers.length + 1),
                 this.model.get("map").bounds.clone()
             );
+            layer.format = TileLayer.Format.BASE64_ZLIB;
             this.selectedIndex = 0;
             this.model.insertLayerAt(0, layer);
 

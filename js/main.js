@@ -54,45 +54,30 @@ require([
     TileSetEditorView,
     TileSetManagerView
 ) {
-    var mapWidth = 40;
-    var mapHeight = 40;
-    var mapTileWidth = 32;
-    var mapTileHeight = 32;
-
-    var map = new Map(
-        Map.Orientation.ORTHOGONAL,
-        mapWidth,
-        mapHeight,
-        mapTileWidth,
-        mapTileHeight
-    );
-
-    var layer = new TileLayer("Tile Layer 1", map.bounds.clone());
-    map.addLayer(layer);
-
-    var tileSet = new TileSet(map.getMaxGlobalId() + 1);
-    tileSet.name = "Desert";
-    tileSet.imageInfo.url = "http://i.imgur.com/Sj89E15.png";
-    tileSet.imageInfo.w = 265;
-    tileSet.imageInfo.h = 199;
-    tileSet.tileInfo.w = map.tileInfo.w;
-    tileSet.tileInfo.h = map.tileInfo.h;
-    tileSet.tileInfo.margin = 1;
-    tileSet.tileInfo.spacing = 1;
-    tileSet.generateTiles();
-    map.addTileSet(tileSet);
-
     // Event Aggregator
     var aggregator = _.extend({}, Backbone.Events);
 
     // Map Model
-
     var mapModel = new MapModel({
-        map: map
+        map: new Map(Map.Orientation.ORTHOGONAL, 32, 32, 40, 40)
     });
 
-    // Main Menu
+    var url = "examples/desert.tmx";
+    var options = {
+        dir: url.split("/").slice(0, -1) || "."
+    };
+    $.get(url, {}, null, "xml")
+        .done(function (xml) {
+            Map.fromXML(xml, options).done(function (map) {
+                mapModel.set("dir", options.dir);
+                mapModel.set("map", map);
+            });
+        })
+        .fail(function () {
+            alert("Failed to open TMX file.");
+        });
 
+    // Main Menu
     var mainMenuView = new MainMenuView({
         el: "#main-menu",
         model: mapModel,
@@ -100,7 +85,6 @@ require([
     });
 
     // Map Editor
-
     var mapEditorView = new MapEditorView({
         el: "#map-editor",
         model: mapModel,
@@ -108,7 +92,6 @@ require([
     });
 
     // Layer Manager
-
     var layerManagerView = new LayerManagerView({
         el: "#layer-manager",
         model: mapModel,
@@ -116,7 +99,6 @@ require([
     });
 
     // Tile Set Manager
-
     var tileSetManagerView = new TileSetManagerView({
         el: "#tile-set-manager",
         model: mapModel,

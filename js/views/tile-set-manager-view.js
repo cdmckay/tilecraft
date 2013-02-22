@@ -3,6 +3,7 @@ define([
     "backbone",
     "handlebars",
     "tmxjs/tile-set",
+    "tmxjs/util/util",
     "../models/tile-set-model",
     "../views/tile-set-editor-view"
 ], function (
@@ -10,6 +11,7 @@ define([
     Backbone,
     Handlebars,
     TileSet,
+    Util,
     TileSetModel,
     TileSetEditorView
 ) {
@@ -85,7 +87,7 @@ define([
                         y: tile.bounds.y,
                         w: tile.bounds.w,
                         h: tile.bounds.h,
-                        url: tile.imageInfo.url
+                        url: Util.urlFor(tile.imageInfo.source, view.model.get("dir"))
                     }));
                     view.tileSelectorEl.append(tileSetTileEl);
                 });

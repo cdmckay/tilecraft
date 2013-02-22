@@ -87,7 +87,7 @@ define([
                 cellEl.css({
                     "background": Util.format(
                         "url({0}) no-repeat -{1}px -{2}px",
-                        cell.tile.imageInfo.url,
+                        Util.urlFor(cell.tile.imageInfo.source, this.model.get("dir")),
                         cell.tile.bounds.x,
                         cell.tile.bounds.y
                     )
@@ -107,7 +107,7 @@ define([
                 this.cellSelectorMarkerEl.css({
                     "background": Util.format(
                         "url({0}) no-repeat -{1}px -{2}px",
-                        tile.imageInfo.url,
+                        Util.urlFor(tile.imageInfo.source, this.model.get("dir")),
                         tile.bounds.x,
                         tile.bounds.y
                     )
@@ -215,7 +215,7 @@ define([
                         cellEl.css({
                             "background": Util.format(
                                 "url({0}) no-repeat -{1}px -{2}px",
-                                cell.tile.imageInfo.url,
+                                Util.urlFor(cell.tile.imageInfo.source, this.model.get("dir")),
                                 cell.tile.bounds.x,
                                 cell.tile.bounds.y
                             )
