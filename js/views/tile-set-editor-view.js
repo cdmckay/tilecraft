@@ -96,7 +96,7 @@ define([
         submit: function () {
             if (this.validator.form()) {
                 this.model.setName(this.formEls.name.val());
-                this.model.setImageURL(this.formEls.imageURL.val());
+                this.model.setImageSource(this.formEls.imageURL.val());
                 this.model.setTileWidth(this.formEls.tileWidth.val());
                 this.model.setTileHeight(this.formEls.tileHeight.val());
                 this.model.setTileMargin(this.formEls.tileMargin.val());
@@ -114,7 +114,7 @@ define([
                     view.deferred.resolve(view.model);
                     $.colorbox.close();
                 };
-                image.src = tileSet.imageInfo.url;
+                image.src = tileSet.imageInfo.source;
             }
             return false;
         },

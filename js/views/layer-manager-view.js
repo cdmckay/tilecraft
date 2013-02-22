@@ -70,17 +70,22 @@ define([
 
         indexLayers: function () {
             var layers = this.model.get("map").layers;
+            var newIndex = this.selectedIndex;
+
+            // Make sure the index is within bounds.
             if (layers.length) {
-                if (this.selectedIndex === null) {
-                    this.selectedIndex = 0;
-                    this.aggregator.trigger("change:select-layer", 0);
-                }
+                if (this.selectedIndex === null) this.selectedIndex = 0;
+                if (this.selectedIndex >= layers.length) this.selectedIndex = layers.length - 1;
             } else {
-                if (this.selectedIndex !== null) {
-                    this.selectedIndex = null;
-                    this.aggregator.trigger("change:select-layer", null);
-                }
+                if (this.selectedIndex !== null) this.selectedIndex = null;
             }
+
+            // If they changed, update them and notify.
+            if (newIndex !== this.selectedIndex) {
+                this.selectedIndex = newIndex;
+                this.aggregator.trigger("change:select-layer", newIndex);
+            }
+
             this.render();
         },
         selectLayer: function (event) {

@@ -53,6 +53,7 @@ define([
             this.cellLayersEl = this.cellsEl.children(".map-editor-cell-layers");
 
             this.listenTo(this.model, "change:map", this.render);
+            this.listenTo(this.model, "change:tileSets", this.render);
             this.listenTo(this.model, "change:layers:insert-layer", this.insertCellLayerElAt);
             this.listenTo(this.model, "change:layers:remove-layer", this.removeCellLayerElAt);
             this.listenTo(this.model, "change:layers:change-layer-visible", this.changeCellLayerElVisibleAt);

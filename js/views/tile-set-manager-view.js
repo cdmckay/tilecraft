@@ -19,7 +19,7 @@ define([
         events: {
             "click .tile-set-manager-tile-selector": "selectTile",
             "click .tile-set-manager-rename-button": "renameTileSet",
-            "change tile-set-manager-tile-sets": "selectTileSet",
+            "change .tile-set-manager-tile-sets": "selectTileSet",
             "click .tile-set-manager-toolbar-add-button": "addTileSet",
             "click .tile-set-manager-toolbar-remove-button": "removeTileSet"
         },
@@ -63,11 +63,14 @@ define([
             var tileSets = this.model.get("map").tileSets;
 
             this.tileSetsEl.empty();
-            $.each(tileSets, function (i) {
+            $.each(tileSets, function (ti, tileSet) {
                 var tileSetOptionEl = $(view.templates.tileSetsOption({
-                    index: i,
-                    name: this.name
+                    index: ti,
+                    name: tileSet.name
                 }));
+                if (ti === view.selectedTileSetIndex) {
+                    tileSetOptionEl.attr("selected", "selected");
+                }
                 view.tileSetsEl.append(tileSetOptionEl);
             });
 
@@ -98,27 +101,40 @@ define([
 
         indexTileSets: function () {
             var tileSets = this.model.get("map").tileSets;
+            var newTileSetIndex = this.selectedTileSetIndex;
+            var newTileIndex = this.selectedTileIndex;
+
+            // Make sure the indices are within bounds.
             if (tileSets.length) {
-                if (this.selectedTileSetIndex === null) {
-                    this.selectedTileSetIndex = 0;
-                    this.aggregator.trigger("change:select-tileSet", 0);
-                }
+                if (this.selectedTileSetIndex === null) newTileSetIndex = 0;
+                if (this.selectedTileSetIndex >= tileSets.length) newTileSetIndex = tileSets.length - 1;
+                if (this.selectedTileIndex >= tileSets[newTileSetIndex].tiles.length) newTileIndex = null;
             } else {
-                if (this.selectedTileSetIndex !== null) {
-                    this.selectedTileSetIndex = null;
-                    this.aggregator.trigger("change:select-tileSet", null);
-                }
-                if (this.selectedTileIndex !== null) {
-                    this.selectedTileIndex = null;
-                    this.aggregator.trigger("change:select-tile", null);
-                }
+                if (this.selectedTileSetIndex !== null) newTileSetIndex = null;
+                if (this.selectedTileIndex !== null) newTileIndex = null;
             }
+
+            // If they changed, update them and notify.
+            if (newTileSetIndex !== this.selectedTileSetIndex) {
+                this.selectedTileSetIndex = newTileSetIndex;
+                this.aggregator.trigger("change:select-tileSet", newTileSetIndex);
+            }
+            if (newTileIndex !== this.selectedTileIndex) {
+                this.selectedTileIndex = newTileIndex;
+                this.aggregator.trigger("change:select-tile", newTileIndex);
+            }
+
             this.render();
         },
         selectTileSet: function (event) {
-            var index = this.tileSetsEl.val();
-            this.selectedTileSetIndex = index;
-            this.render();
+            var index = parseInt(this.tileSetsEl.val());
+            if (index !== this.selectedTileSetIndex) {
+                this.selectedTileSetIndex = index;
+                this.selectedTileIndex = null;
+                this.aggregator.trigger("change:select-tileSet", index);
+                this.aggregator.trigger("change:select-tile", null);
+                this.render();
+            }
         },
         renameTileSet: function (event) {
             var index = this.selectedTileSetIndex;
@@ -138,8 +154,8 @@ define([
             this.editorView
                 .open()
                 .done(function (tileSetModel) {
+                    view.selectedTileSetIndex = map.tileSets.length;
                     view.model.addTileSet(tileSetModel.get("tileSet"));
-                    view.selectedTileSetIndex = map.tileSets.length - 1;
                 });
 
         },
@@ -147,8 +163,6 @@ define([
             var index = this.selectedTileSetIndex;
             if (index !== null) {
                 this.model.removeTileSetAt(index);
-                var tileSetCount = this.model.get("map").tileSets.length;
-                this.selectedTileSetIndex = tileSetCount === 0 ? null : Math.min(index, tileSetCount - 1);
             }
         },
         selectTile: function (event) {

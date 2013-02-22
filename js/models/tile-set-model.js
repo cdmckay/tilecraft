@@ -4,8 +4,8 @@ define(["backbone"], function (Backbone) {
             this.get("tileSet").name = name;
             this.trigger("change:name");
         },
-        setImageURL: function (imageURL) {
-            this.get("tileSet").imageInfo.url = imageURL;
+        setImageSource: function (imageSource) {
+            this.get("tileSet").imageInfo.source = imageSource;
             this.trigger("change:imageInfo");
         },
         setTileWidth: function (tileWidth) {
