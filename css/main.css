@@ -54,6 +54,11 @@ em {
     top: 0;
     bottom: 0;
     overflow: auto;
+
+    -moz-user-select: -moz-none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 .map-editor-cells {

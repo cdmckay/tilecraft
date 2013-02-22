@@ -149,13 +149,16 @@ define([
                 return;
             }
 
-            var el = $(event.target);
-            if (el.parent().hasClass("map-editor-cell-selector")) {
-                var index = parseInt(el.attr("data-index"));
+            var cellEl = $(event.target).parents().addBack().filter(".map-editor-cell-selector > div");
+            if (cellEl.length) {
+                var index = parseInt(cellEl.attr("data-index"));
                 var cellEls = this.cellSelectorEl.children();
 
                 this.selectedIndex = index;
                 cellEls.eq(index).append(this.cellSelectorMarkerEl.detach());
+
+                // If mouse button is down, then we should select the cell as well.
+                if (event.which === 1) this.selectCell(event);
             }
         },
         selectCell: function (event) {
@@ -164,9 +167,9 @@ define([
                 return;
             }
 
-            var el = $(event.target).parent();
-            if (el.parent().hasClass("map-editor-cell-selector")) {
-                var index = parseInt(el.attr("data-index"));
+            var cellEl = $(event.target).parents().addBack().filter(".map-editor-cell-selector > div");
+            if (cellEl.length) {
+                var index = parseInt(cellEl.attr("data-index"));
 
                 var map = this.model.get("map");
                 var layer = map.layers[this.selectedLayerIndex];
