@@ -32,6 +32,7 @@ require([
     "./models/map-model",
     "./models/tile-set-model",
     "./views/layer-manager-view",
+    "./views/main-menu-view",
     "./views/map-editor-view",
     "./views/tile-set-editor-view",
     "./views/tile-set-manager-view"
@@ -48,6 +49,7 @@ require([
     MapModel,
     TileSetModel,
     LayerManagerView,
+    MainMenuView,
     MapEditorView,
     TileSetEditorView,
     TileSetManagerView
@@ -81,6 +83,14 @@ require([
 
     var mapModel = new MapModel({
         map: map
+    });
+
+    // Main Menu
+
+    var mainMenuView = new MainMenuView({
+        el: "#main-menu",
+        model: mapModel,
+        aggregator: aggregator
     });
 
     // Map Editor

@@ -5,6 +5,7 @@
       <w>gunzip</w>
       <w>mousedown</w>
       <w>mouseover</w>
+      <w>mouseup</w>
       <w>onload</w>
       <w>onsubmit</w>
     </words>

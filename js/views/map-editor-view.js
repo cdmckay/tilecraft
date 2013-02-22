@@ -13,6 +13,9 @@ define([
 ) {
     return Backbone.View.extend({
         events: {
+            "mousedown": "updateMouseButtonState",
+            "mouseup": "updateMouseButtonState",
+            "mouseleave": "updateMouseButtonState",
             "mouseenter .map-editor-cell-selector": "showCellSelector",
             "mouseleave .map-editor-cell-selector": "hideCellSelector",
             "mouseover .map-editor-cell-selector": "highlightCell",
@@ -28,6 +31,9 @@ define([
         cellSelectorEl: null,
         cellSelectorMarkerEl: null,
         cellLayersEl: null,
+
+        /* The mouse button state: true for down, false for up. */
+        mouseButtonState: [],
 
         /* The currently selected Layer index. */
         selectedLayerIndex: null,
@@ -143,6 +149,19 @@ define([
 
             this.cellSelectorMarkerEl.hide();
         },
+        updateMouseButtonState: function (event) {
+            switch (event.type) {
+                case "mousedown":
+                    this.mouseButtonState[event.which] = true;
+                    break;
+                case "mouseup":
+                    this.mouseButtonState[event.which] = false;
+                    break;
+                case "mouseleave":
+                    this.mouseButtonState.length = 0;
+                    break;
+            }
+        },
         highlightCell: function (event) {
             // Can't select a cell if there are no layers.
             if (this.selectedLayerIndex === null) {
@@ -158,7 +177,7 @@ define([
                 cellEls.eq(index).append(this.cellSelectorMarkerEl.detach());
 
                 // If mouse button is down, then we should select the cell as well.
-                if (event.which === 1) this.selectCell(event);
+                if (this.mouseButtonState[1]) this.selectCell(event);
             }
         },
         selectCell: function (event) {
