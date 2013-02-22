@@ -14,6 +14,39 @@ em {
     font-style: italic;
 }
 
+#main-menu {
+    position: absolute;
+    left: 100px;
+    top: -1px;
+    z-index: 10;
+}
+
+.menu {
+    background: #f0f0f0;
+    border: 1px #b9b9b9 solid;
+    padding: 4px;
+}
+
+.menu button {
+    height: 32px;
+    width: 32px;
+    padding: 4px;
+    border: 1px transparent solid;
+    background: no-repeat center center;
+}
+
+.menu button:hover {
+    border-color: #828790;
+}
+
+.menu button.main-menu-new-button {
+    background-image: url(../images/24x24/document-new.png);
+}
+
+.menu button.main-menu-download-button {
+    background-image: url(../images/24x24/document-save.png);
+}
+
 #map-editor {
     position: absolute;
     left: 0;
@@ -122,23 +155,23 @@ em {
 }
 
 button.layer-manager-toolbar-add-button {
-    background-image: url(../images/document-new.png);
+    background-image: url(../images/16x16/document-new.png);
 }
 
-button.layer-manager-toolbar-up-button {
-    background-image: url(../images/go-up.png);
+button.layer-manager-toolbar-raise-button {
+    background-image: url(../images/16x16/go-up.png);
 }
 
-button.layer-manager-toolbar-down-button {
-    background-image: url(../images/go-down.png);
+button.layer-manager-toolbar-lower-button {
+    background-image: url(../images/16x16/go-down.png);
 }
 
 button.layer-manager-toolbar-duplicate-button {
-    background-image: url(../images/stock-duplicate-16.png);
+    background-image: url(../images/16x16/stock-duplicate-16.png);
 }
 
 button.layer-manager-toolbar-remove-button {
-    background-image: url(../images/edit-delete.png);
+    background-image: url(../images/16x16/edit-delete.png);
 }
 
 .layer-manager-layers li {
@@ -249,11 +282,11 @@ button.layer-manager-toolbar-remove-button {
 }
 
 button.tile-set-manager-toolbar-add-button {
-    background-image: url(../images/document-new.png);
+    background-image: url(../images/16x16/document-new.png);
 }
 
 button.tile-set-manager-toolbar-remove-button {
-    background-image: url(../images/edit-delete.png);
+    background-image: url(../images/16x16/edit-delete.png);
 }
 
 #windows {

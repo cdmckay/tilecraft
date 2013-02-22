@@ -8,6 +8,10 @@
     <script type="text/javascript" src="js/lib/require.js" data-main="js/main"></script>
 </head>
 <body>
+    <div id="main-menu" class="menu">
+        <button class="main-menu-new-button"></button>
+        <button class="main-menu-download-button"></button>
+    </div>
     <div id="map-editor">
         <div class="map-editor-cells">
             <div class="map-editor-cell-selector"></div>
@@ -19,11 +23,11 @@
         <ul class="layer-manager-layers">
         </ul>
         <div class="layer-manager-toolbar toolbar">
-            <button class="layer-manager-toolbar-add-button"></button>
-            <button class="layer-manager-toolbar-up-button"></button>
-            <button class="layer-manager-toolbar-down-button"></button>
-            <button class="layer-manager-toolbar-duplicate-button"></button>
-            <button class="layer-manager-toolbar-remove-button"></button>
+            <button class="layer-manager-toolbar-add-button" title="Add Layer"></button>
+            <button class="layer-manager-toolbar-raise-button" title="Raise Layer"></button>
+            <button class="layer-manager-toolbar-lower-button" title="Lower Layer"></button>
+            <button class="layer-manager-toolbar-duplicate-button" title="Duplicate Layer"></button>
+            <button class="layer-manager-toolbar-remove-button" title="Remove Layer"></button>
         </div>
     </div>
     <div id="tile-set-manager" class="manager">
@@ -38,8 +42,8 @@
         <div class="tile-set-manager-tile-selector">
         </div>
         <div class="tile-set-manager-toolbar toolbar">
-            <button class="tile-set-manager-toolbar-add-button"></button>
-            <button class="tile-set-manager-toolbar-remove-button"></button>
+            <button class="tile-set-manager-toolbar-add-button" title="Add Tile Set"></button>
+            <button class="tile-set-manager-toolbar-remove-button" title="Remove Tile Set"></button>
         </div>
     </div>
     <div id="windows">

@@ -17,8 +17,8 @@ define([
             "dblclick .layer-manager-layers-item": "renameLayer",
             "click .layer-manager-layers-item input": "toggleLayerVisible",
             "click .layer-manager-toolbar-add-button": "addTileLayer",
-            "click .layer-manager-toolbar-up-button": "raiseLayer",
-            "click .layer-manager-toolbar-down-button": "lowerLayer",
+            "click .layer-manager-toolbar-raise-button": "raiseLayer",
+            "click .layer-manager-toolbar-lower-button": "lowerLayer",
             "click .layer-manager-toolbar-duplicate-button": "duplicateLayer",
             "click .layer-manager-toolbar-remove-button": "removeLayer"
         },
