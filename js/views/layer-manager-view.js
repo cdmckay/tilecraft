@@ -37,11 +37,12 @@ define([
 
             this.layersEl = this.$(".layer-manager-layers");
 
-            this.listenTo(this.model, "change:layers", this.render);
+            this.listenTo(this.model, "change:map", this.indexLayers);
+            this.listenTo(this.model, "change:layers", this.indexLayers);
 
             var layers = this.model.get("map").layers;
             if (layers.length) {
-                this.render();
+                this.indexLayers();
             }
         },
         render: function () {
@@ -49,26 +50,39 @@ define([
             var layers = this.model.get("map").layers;
 
             // This is for the case where a Layer has been added via the model.
-            if (this.selectedIndex === null && layers.length) {
-                this.selectedIndex = 0;
-            }
+
 
             this.layersEl.empty();
-            $.each(layers, function (i) {
+            $.each(layers, function (li, layer) {
                 var layersItemEl = $(view.templates.layersItem({
-                    name: this.name,
-                    type: this instanceof TileLayer ? "Tiles" : "Objects"
+                    name: layer.name,
+                    type: layer instanceof TileLayer ? "Tiles" : "Objects"
                 }));
-                if (i === view.selectedIndex) {
+                if (li === view.selectedIndex) {
                     layersItemEl.addClass("selected");
                 }
-                layersItemEl.find("input").prop("checked", this.visible);
+                layersItemEl.find("input").prop("checked", layer.visible);
                 view.layersEl.append(layersItemEl);
             });
 
             return this;
         },
 
+        indexLayers: function () {
+            var layers = this.model.get("map").layers;
+            if (layers.length) {
+                if (this.selectedIndex === null) {
+                    this.selectedIndex = 0;
+                    this.aggregator.trigger("change:select-layer", 0);
+                }
+            } else {
+                if (this.selectedIndex !== null) {
+                    this.selectedIndex = null;
+                    this.aggregator.trigger("change:select-layer", null);
+                }
+            }
+            this.render();
+        },
         selectLayer: function (event) {
             var el = $(event.currentTarget);
             var index = el.prevAll().length;

@@ -1,10 +1,14 @@
 define([
     "jquery",
-    "backbone"
+    "backbone",
+    "tmxjs/map",
+    "tmxjs/tile-layer"
 ], function (
     $,
-    Backbone
-    ) {
+    Backbone,
+    Map,
+    TileLayer
+) {
     return Backbone.View.extend({
         events: {
             "mousedown #main-menu-toggle": "toggle",
@@ -17,8 +21,6 @@ define([
 
         initialize: function (options) {
             this.aggregator = options.aggregator;
-
-            this.toggleEl = this.$("#main-menu-toggle");
         },
         render: function () {
         },
@@ -27,10 +29,22 @@ define([
             var up = this.$el.hasClass("up");
             this.$el.toggleClass("up").animate({ top: up ? -1 : -34 });
         },
-        newMap: function () {
-            alert("New Map!");
+        newMap: function (event) {
+            if (confirm("Are you sure you want to create a new map?")) {
+                var map = this.model.get("map");
+                var newMap = new Map(
+                    Map.Orientation.ORTHOGONAL,
+                    map.bounds.w,
+                    map.bounds.h,
+                    map.tileInfo.w,
+                    map.tileInfo.h
+                );
+                var layer = new TileLayer("Tile Layer 1", newMap.bounds.clone());
+                newMap.addLayer(layer);
+                this.model.set("map", newMap);
+            }
         },
-        downloadMap: function () {
+        downloadMap: function (event) {
             alert("Download Map!");
         }
     });

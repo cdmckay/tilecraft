@@ -59,7 +59,13 @@ require([
     var mapTileWidth = 32;
     var mapTileHeight = 32;
 
-    var map = new Map("orthogonal", mapWidth, mapHeight, mapTileWidth, mapTileHeight);
+    var map = new Map(
+        Map.Orientation.ORTHOGONAL,
+        mapWidth,
+        mapHeight,
+        mapTileWidth,
+        mapTileHeight
+    );
 
     var layer = new TileLayer("Tile Layer 1", map.bounds.clone());
     map.addLayer(layer);

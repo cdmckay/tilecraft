@@ -14,6 +14,7 @@ define(["underscore", "backbone"], function (_, Backbone) {
         setLayerNameAt: function (index, name) {
             this.get("map").layers[index].name = name;
             this.trigger("change:layers");
+            this.trigger("change:layers:set-layer-name");
         },
         setLayerVisibleAt: function (index, visible) {
             this.get("map").layers[index].visible = visible;
@@ -30,14 +31,17 @@ define(["underscore", "backbone"], function (_, Backbone) {
         addTileSet: function (tileSet) {
             this.get("map").addTileSet(tileSet);
             this.trigger("change:tileSets");
+            this.trigger("change:tileSets:add-tileSet");
         },
         setTileSetNameAt: function (index, name) {
             this.get("map").tileSets[index].name = name;
             this.trigger("change:tileSets");
+            this.trigger("change:tileSets:set-tileSet-name");
         },
         removeTileSetAt: function (index) {
             this.get("map").removeTileSetAt(index);
             this.trigger("change:tileSets");
+            this.trigger("change:tileSets:remove-tileSet");
         }
     });
 });

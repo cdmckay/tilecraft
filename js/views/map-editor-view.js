@@ -52,6 +52,7 @@ define([
             this.cellSelectorMarkerEl = $("<div>");
             this.cellLayersEl = this.cellsEl.children(".map-editor-cell-layers");
 
+            this.listenTo(this.model, "change:map", this.render);
             this.listenTo(this.model, "change:layers:insert-layer", this.insertCellLayerElAt);
             this.listenTo(this.model, "change:layers:remove-layer", this.removeCellLayerElAt);
             this.listenTo(this.model, "change:layers:change-layer-visible", this.changeCellLayerElVisibleAt);
@@ -101,15 +102,19 @@ define([
             this.selectedTileGlobalId = globalId;
 
             // Also set the cell selector marker image.
-            var tile = this.model.get("map").findTile(globalId);
-            this.cellSelectorMarkerEl.css({
-                "background": Util.format(
-                    "url({0}) no-repeat -{1}px -{2}px",
-                    tile.imageInfo.url,
-                    tile.bounds.x,
-                    tile.bounds.y
-                )
-            });
+            if (globalId) {
+                var tile = this.model.get("map").findTile(globalId);
+                this.cellSelectorMarkerEl.css({
+                    "background": Util.format(
+                        "url({0}) no-repeat -{1}px -{2}px",
+                        tile.imageInfo.url,
+                        tile.bounds.x,
+                        tile.bounds.y
+                    )
+                });
+            } else {
+                this.cellSelectorMarkerEl.detach();
+            }
         },
         insertCellLayerElAt: function (index) {
             var layers = this.model.get("map").layers;
@@ -134,18 +139,12 @@ define([
         },
 
         showCellSelector: function () {
-            // Can't select a cell if there are no layers.
-            if (this.selectedLayerIndex === null) {
-                return;
-            }
+            if (!this.isMapEditable()) return;
 
             this.cellSelectorMarkerEl.show();
         },
         hideCellSelector: function () {
-            // Can't select a cell if there are no layers.
-            if (this.selectedLayerIndex === null) {
-                return;
-            }
+            if (!this.isMapEditable()) return;
 
             this.cellSelectorMarkerEl.hide();
         },
@@ -163,10 +162,7 @@ define([
             }
         },
         highlightCell: function (event) {
-            // Can't select a cell if there are no layers.
-            if (this.selectedLayerIndex === null) {
-                return;
-            }
+            if (!this.isMapEditable()) return;
 
             var cellEl = $(event.target).parents().addBack().filter(".map-editor-cell-selector > div");
             if (cellEl.length) {
@@ -181,10 +177,7 @@ define([
             }
         },
         selectCell: function (event) {
-            // Can't select a cell if there are no layers.
-            if (this.selectedLayerIndex === null || this.selectedTileGlobalId === null) {
-                return;
-            }
+            if (!this.isMapEditable()) return;
 
             var cellEl = $(event.target).parents().addBack().filter(".map-editor-cell-selector > div");
             if (cellEl.length) {
@@ -198,6 +191,9 @@ define([
             }
         },
 
+        isMapEditable: function () {
+            return this.selectedLayerIndex !== null && this.selectedTileGlobalId !== null;
+        },
         generateCellLayerEl: function (layer) {
             var map = this.model.get("map");
             var cellLayerEl = $("<div>", {

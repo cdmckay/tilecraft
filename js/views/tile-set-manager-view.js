@@ -48,21 +48,17 @@ define([
             this.tileSelectorEl = this.$(".tile-set-manager-tile-selector");
             this.tileSelectorMarkerEl = $("<div>");
 
-            this.listenTo(this.model, "change:tileSets", this.render);
+            this.listenTo(this.model, "change:map", this.indexTileSets);
+            this.listenTo(this.model, "change:tileSets", this.indexTileSets);
 
             var tileSets = this.model.get("map").tileSets;
             if (tileSets) {
-                this.render();
+                this.indexTileSets();
             }
         },
         render: function () {
             var view = this;
             var tileSets = this.model.get("map").tileSets;
-
-            // This is for the case where a TileSet has been added via the model.
-            if (this.selectedTileSetIndex === null && tileSets.length) {
-                this.selectedTileSetIndex = 0;
-            }
 
             this.tileSetsEl.empty();
             $.each(tileSets, function (i) {
@@ -98,6 +94,25 @@ define([
             return this;
         },
 
+        indexTileSets: function () {
+            var tileSets = this.model.get("map").tileSets;
+            if (tileSets.length) {
+                if (this.selectedTileSetIndex === null) {
+                    this.selectedTileSetIndex = 0;
+                    this.aggregator.trigger("change:select-tileSet", 0);
+                }
+            } else {
+                if (this.selectedTileSetIndex !== null) {
+                    this.selectedTileSetIndex = null;
+                    this.aggregator.trigger("change:select-tileSet", null);
+                }
+                if (this.selectedTileIndex !== null) {
+                    this.selectedTileIndex = null;
+                    this.aggregator.trigger("change:select-tile", null);
+                }
+            }
+            this.render();
+        },
         selectTileSet: function (event) {
             var index = this.tileSetsEl.val();
             this.selectedTileSetIndex = index;
