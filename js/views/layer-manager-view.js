@@ -74,10 +74,10 @@ define([
 
             // Make sure the index is within bounds.
             if (layers.length) {
-                if (this.selectedIndex === null) this.selectedIndex = 0;
-                if (this.selectedIndex >= layers.length) this.selectedIndex = layers.length - 1;
+                if (this.selectedIndex === null) newIndex = 0;
+                if (this.selectedIndex >= layers.length) newIndex = layers.length - 1;
             } else {
-                if (this.selectedIndex !== null) this.selectedIndex = null;
+                if (this.selectedIndex !== null) newIndex = null;
             }
 
             // If they changed, update them and notify.

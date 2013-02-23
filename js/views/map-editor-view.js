@@ -79,12 +79,24 @@ define([
             this.generateCellLayerEls();
         },
         renderCellAt: function (index) {
-            var layers = this.model.get("map").layers;
-            var layer = layers[this.selectedLayerIndex];
+            var map = this.model.get("map");
+            var layer = map.layers[this.selectedLayerIndex];
             var cell = layer.cells[index];
             if (cell) {
                 var cellLayerEl = this.getCellLayerElAt(this.selectedLayerIndex);
-                var cellEl = cellLayerEl.children().eq(index);
+                var cellEl = cellLayerEl.children(Util.format("[data-index={0}]", index));
+                if (!cellEl.length) {
+                    var i = Math.floor(index % map.bounds.w);
+                    var j = Math.floor(index / map.bounds.w);
+                    cellEl = $(this.templates.cell({
+                        index: index,
+                        i: i * map.tileInfo.w,
+                        j: j * map.tileInfo.h,
+                        w: map.tileInfo.w,
+                        h: map.tileInfo.h
+                    }));
+                    cellLayerEl.append(cellEl);
+                }
                 cellEl.css({
                     "background": Util.format(
                         "url({0}) no-repeat -{1}px -{2}px",
@@ -118,8 +130,8 @@ define([
             }
         },
         insertCellLayerElAt: function (index) {
-            var layers = this.model.get("map").layers;
-            var layer = layers[index];
+            var map = this.model.get("map");
+            var layer = map.layers[index];
             var cellLayerEl = this.generateCellLayerEl(layer);
             var cellLayerElsCount = this.cellLayersEl.children().length;
             if (cellLayerElsCount === 0 || cellLayerElsCount === index) {
@@ -204,16 +216,15 @@ define([
             for (var j = 0; j < map.bounds.h; j++) {
                 for (var i = 0; i < map.bounds.w; i++) {
                     var index = j * map.bounds.w + i;
-                    var cellEl = $(this.templates.cell({
-                        index: index,
-                        i: i * map.tileInfo.w,
-                        j: j * map.tileInfo.h,
-                        w: map.tileInfo.w,
-                        h: map.tileInfo.h
-                    }));
                     var cell = layer.cells[index];
                     if (cell) {
-                        cellEl.css({
+                        var cellEl = $(this.templates.cell({
+                            index: index,
+                            i: i * map.tileInfo.w,
+                            j: j * map.tileInfo.h,
+                            w: map.tileInfo.w,
+                            h: map.tileInfo.h
+                        })).css({
                             "background": Util.format(
                                 "url({0}) no-repeat -{1}px -{2}px",
                                 Util.urlFor(cell.tile.imageInfo.source, this.model.get("dir")),
