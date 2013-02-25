@@ -59,7 +59,7 @@ require([
 
     // Map Model
     var mapModel = new MapModel({
-        url: 'save.php',
+        urlRoot: 'map-controller.php?id=',
         map: new Map(Map.Orientation.ORTHOGONAL, 32, 32, 40, 40)
     });
 

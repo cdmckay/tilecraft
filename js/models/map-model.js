@@ -2,7 +2,7 @@ define(["underscore", "backbone"], function (_, Backbone) {
 
     return Backbone.Model.extend({
         initialize: function (options) {
-            this.url = options.url;
+            this.urlRoot = options.urlRoot;
             this.on("change:map", function () {
                 this.set("id", options.id || this.generateGuid());
             });
