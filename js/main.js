@@ -54,12 +54,15 @@ require([
     TileSetEditorView,
     TileSetManagerView
 ) {
+    // Emulate HTTP for my crappy host.
+    Backbone.emulateHTTP = true;
+
     // Event Aggregator
     var aggregator = _.extend({}, Backbone.Events);
 
     // Map Model
     var mapModel = new MapModel({
-        urlRoot: 'map-controller.php?id=',
+        urlRoot: 'endpoint.php?r=map',
         map: new Map(Map.Orientation.ORTHOGONAL, 32, 32, 40, 40)
     });
 

@@ -2,13 +2,13 @@
 
 require_once 'config.php';
 
-$id = isset($_GET['id']) ? $_GET['id'] : null;
-if (!$id) {
-    error_log('Id must be specified');
+$r = isset($_GET['r']) ? $_GET['r'] : null;
+if (!$r) {
+    error_log('A route must be specified');
     exit;
 }
 
-$action = isset($_GET['action']) ? $_GET['action'] : '';
+list($controller, $id, $action) = array_replace(array_fill(0, 3, null), explode('/', $r));
 
 switch ($action) {
     case 'download':
@@ -22,7 +22,8 @@ switch ($action) {
 // Routers
 
 function routeDownload($id) {
-    switch ($_SERVER['REQUEST_METHOD']) {
+    $method = $_SERVER['HTTP_X_HTTP_METHOD_OVERRIDE'] ?: $_SERVER['REQUEST_METHOD'];
+    switch ($method) {
         case 'GET':
             actionDownload($id);
             break;
@@ -32,7 +33,8 @@ function routeDownload($id) {
 }
 
 function routeDefault($id) {
-    switch ($_SERVER['REQUEST_METHOD']) {
+    $method = $_SERVER['HTTP_X_HTTP_METHOD_OVERRIDE'] ?: $_SERVER['REQUEST_METHOD'];
+    switch ($method) {
         case 'PUT':
             actionUpdate($id);
             break;

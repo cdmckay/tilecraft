@@ -49,7 +49,7 @@ define([
             this.model.save()
                 .done(function (response) {
                     if (response.successful) {
-                        location.href = 'map-controller.php?id=' + view.model.id + '&action=download';
+                        location.href = 'endpoint.php?r=map/' + view.model.id + '/download';
                     } else {
                         alert(response.message + ".");
                     }
