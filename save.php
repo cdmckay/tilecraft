@@ -1,6 +1,6 @@
 <?php
 
-define('MAX_TMX_DIR_SIZE', 100 * 1024); // 100 MB
+define('MAX_TMX_DIR_SIZE', 100 * 1024 * 1024); // 100 MB
 
 // Adapted from:
 // http://stackoverflow.com/questions/478121/php-get-directory-size
@@ -42,7 +42,6 @@ if ($tmx_dir_size > MAX_TMX_DIR_SIZE) {
         $op = $file->isDir() ? 'rmdir' : 'unlink';
         $op($file->getRealPath());
     }
-    rmdir($tmx_dir);
 }
 
 if ((is_dir($map_dir) || mkdir($map_dir, 0777, true)) && file_put_contents($tmxu_file, $request->xml)) {

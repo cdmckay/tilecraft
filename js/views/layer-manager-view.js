@@ -49,9 +49,6 @@ define([
             var view = this;
             var layers = this.model.get("map").layers;
 
-            // This is for the case where a Layer has been added via the model.
-
-
             this.layersEl.empty();
             $.each(layers, function (li, layer) {
                 var layersItemEl = $(view.templates.layersItem({

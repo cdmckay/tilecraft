@@ -1,15 +1,11 @@
 define(["underscore", "backbone"], function (_, Backbone) {
+
     return Backbone.Model.extend({
         initialize: function (options) {
             this.url = options.url;
-
-            // Adapted from:
-            // http://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid-in-javascript
-            var guid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-                var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-                return v.toString(16);
+            this.on("change:map", function () {
+                this.set("id", options.id || this.generateGuid());
             });
-            this.set("id", guid);
         },
         toJSON: function () {
             var doc = this.get("map").toXML();
@@ -20,6 +16,14 @@ define(["underscore", "backbone"], function (_, Backbone) {
             };
         },
 
+        generateGuid: function () {
+            // Adapted from:
+            // http://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid-in-javascript
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        },
         insertLayerAt: function (index, layer) {
             this.get("map").insertLayerAt(index, layer);
             this.trigger("change:layers");

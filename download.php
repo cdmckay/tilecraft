@@ -64,7 +64,7 @@ $result = $zip_archive->open($zip_file, ZipArchive::CREATE);
 if ($result) {
     $zip_archive->addFile($tmx_file, 'map.tmx');
     foreach (glob($map_dir . '/*') as $file) {
-        if (substr($file, -3) === 'tmx') continue;
+        if (substr($file, -3) === 'tmx' || substr($file, -4) === 'tmxu') continue;
         $zip_archive->addFile($file, pathinfo($file, PATHINFO_BASENAME));
     }
     $zip_archive->close();
