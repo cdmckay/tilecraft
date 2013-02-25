@@ -2,12 +2,16 @@
   <dictionary name="cdmckay">
     <words>
       <w>dblclick</w>
+      <w>filenames</w>
+      <w>filepaths</w>
+      <w>guid</w>
       <w>gunzip</w>
       <w>mousedown</w>
       <w>mouseover</w>
       <w>mouseup</w>
       <w>onload</w>
       <w>onsubmit</w>
+      <w>tmxu</w>
     </words>
   </dictionary>
 </component>

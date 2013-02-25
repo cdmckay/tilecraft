@@ -59,6 +59,7 @@ require([
 
     // Map Model
     var mapModel = new MapModel({
+        url: 'save.php',
         map: new Map(Map.Orientation.ORTHOGONAL, 32, 32, 40, 40)
     });
 

@@ -45,7 +45,18 @@ define([
             }
         },
         downloadMap: function (event) {
-            alert("Download Map!");
+            var view = this;
+            this.model.save()
+                .done(function (response) {
+                    if (response.successful) {
+                        location.href = 'download.php?id=' + view.model.id;
+                    } else {
+                        alert(response.message + ".");
+                    }
+                })
+                .fail(function () {
+                    alert("Failed to save map.");
+                });
         }
     });
 });

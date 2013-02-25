@@ -1,5 +1,25 @@
 define(["underscore", "backbone"], function (_, Backbone) {
     return Backbone.Model.extend({
+        initialize: function (options) {
+            this.url = options.url;
+
+            // Adapted from:
+            // http://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid-in-javascript
+            var guid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+            this.set("id", guid);
+        },
+        toJSON: function () {
+            var doc = this.get("map").toXML();
+            var xmlString = doc.context.xml || new XMLSerializer().serializeToString(doc.context);
+            return {
+                id: this.id,
+                xml: xmlString
+            };
+        },
+
         insertLayerAt: function (index, layer) {
             this.get("map").insertLayerAt(index, layer);
             this.trigger("change:layers");
