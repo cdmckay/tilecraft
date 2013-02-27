@@ -76,6 +76,10 @@ em {
     background-image: url(../images/24x24/document-save.png);
 }
 
+.menu button.main-menu-undo-button {
+    background-image: url(../images/24x24/document-new.png);
+}
+
 #map-editor {
     position: absolute;
     left: 0;
@@ -408,4 +412,3 @@ label.error {
     padding-top: 2px;
     color: #c00;
 }
-

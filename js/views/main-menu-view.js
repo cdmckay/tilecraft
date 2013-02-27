@@ -13,7 +13,8 @@ define([
         events: {
             "mousedown #main-menu-toggle": "toggle",
             "click .main-menu-new-button": "newMap",
-            "click .main-menu-download-button": "downloadMap"
+            "click .main-menu-download-button": "downloadMap",
+            "click .main-menu-undo-button": "undo"
         },
 
         aggregator: null,
@@ -23,6 +24,10 @@ define([
             this.aggregator = options.aggregator;
         },
         render: function () {
+        },
+
+        undo: function (event) {
+          this.aggregator.trigger("change:undo");
         },
 
         toggle: function (event) {
