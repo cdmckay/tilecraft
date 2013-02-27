@@ -44,6 +44,8 @@ define([
         /* The currently selected Cell index. */
         selectedIndex: null,
 
+        oldMoves: [],
+
         initialize: function (options) {
             this.aggregator = options.aggregator;
 
@@ -59,6 +61,7 @@ define([
             this.listenTo(this.model, "change:layers:change-layer-visible", this.changeCellLayerElVisibleAt);
             this.listenTo(this.aggregator, "change:select-layer", this.setSelectedLayerIndex);
             this.listenTo(this.aggregator, "change:select-tile", this.setSelectedTileGlobalId);
+            this.listenTo(this.aggregator, "change:undo", this.undo);
 
             this.render();
         },
@@ -177,6 +180,7 @@ define([
         highlightCell: function (event) {
             if (!this.isMapEditable()) return;
 
+
             var cellEl = $(event.target).parents().addBack().filter(".map-editor-cell-selector > div");
             if (cellEl.length) {
                 var index = parseInt(cellEl.attr("data-index"));
@@ -199,9 +203,33 @@ define([
                 var map = this.model.get("map");
                 var layer = map.layers[this.selectedLayerIndex];
                 var tile = map.findTile(this.selectedTileGlobalId);
+
+                // Save the old tile only if the event fired from a cell, we check for this by looking for
+                // the data-index attribute.
+                // We have to do this because the event gets fired twice, once for each div. The cell and the 
+                // div with the background image. However, this is only a problem with the mouseover event so the 
+                // first onclick should be added always.
+                if (event.type === "mousedown" || event.target.getAttribute("data-index")) {
+                  this.oldMoves.push({
+                    "index": index,
+                    "tile": layer.cells[index].tile
+                  });
+                }
                 layer.cells[index] = new Cell(tile);
                 this.renderCellAt(index);
+
             }
+        },
+
+        undo: function(event) {
+          if (this.oldMoves.length > 0) {
+            var move = this.oldMoves.pop();
+            var map = this.model.get("map");
+            var layer = map.layers[this.selectedLayerIndex];
+            var index = move["index"];
+            layer.cells[index] = new Cell(move["tile"]);
+            this.renderCellAt(index);
+          }
         },
 
         isMapEditable: function () {
