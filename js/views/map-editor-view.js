@@ -86,13 +86,13 @@ define([
             this.generateCellSelectorCellEls();
             this.generateCellLayerEls();
         },
-        renderCellAt: function (index) {
+        renderCellAt: function (layerIndex, index) {
             var map = this.model.get("map");
-            var layer = map.layers[this.selectedLayerIndex];
+            var layer = map.layers[layerIndex];
+            var cellLayerEl = this.getCellLayerElAt(layerIndex);
+            var cellEl = cellLayerEl.children(Util.format("[data-index={0}]", index));
             var cell = layer.cells[index];
             if (cell) {
-                var cellLayerEl = this.getCellLayerElAt(this.selectedLayerIndex);
-                var cellEl = cellLayerEl.children(Util.format("[data-index={0}]", index));
                 if (!cellEl.length) {
                     var i = Math.floor(index % map.bounds.w);
                     var j = Math.floor(index / map.bounds.w);
@@ -113,6 +113,8 @@ define([
                         cell.tile.bounds.y
                     )
                 });
+            } else {
+                cellEl.remove();
             }
         },
 
@@ -171,7 +173,7 @@ define([
             layer.cells[index] = new Cell(tile);
             this.aggregator.trigger("change:insert-cell", this.selectedLayerIndex, index);
 
-            this.renderCellAt(index);
+            this.renderCellAt(this.selectedLayerIndex, index);
         },
 
         showCellSelector: function () {
@@ -187,10 +189,10 @@ define([
         undo: function () {
             if (this.actions.length) {
                 var map = this.model.get("map");
-                var layer = map.layers[this.selectedLayerIndex];
                 var action = this.actions.pop();
+                var layer = map.layers[action.layerIndex];
                 layer.cells[action.index] = action.cell;
-                this.renderCellAt(action.index);
+                this.renderCellAt(action.layerIndex, action.index);
             }
         },
 
