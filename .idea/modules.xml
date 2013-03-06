@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/tmxjs-editor.iml" filepath="$PROJECT_DIR$/.idea/tmxjs-editor.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/tilecraft.iml" filepath="$PROJECT_DIR$/.idea/tilecraft.iml" />
     </modules>
   </component>
 </project>
