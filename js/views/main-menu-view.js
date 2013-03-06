@@ -20,21 +20,26 @@ define([
         aggregator: null,
         templates: {},
 
+        /* A stack containing the actions taken. */
+        actions: [],
+
         initialize: function (options) {
             this.aggregator = options.aggregator;
+
+            this.listenTo(this.aggregator, "change:insert-cell", function () { this.updateActions("change:insert-cell"); });
         },
         render: function () {
         },
 
-        undo: function (event) {
-          this.aggregator.trigger("change:undo");
+        updateActions: function (eventType) {
+            this.actions.push(eventType);
         },
 
-        toggle: function (event) {
+        toggle: function () {
             var up = this.$el.hasClass("up");
             this.$el.toggleClass("up").animate({ top: up ? -1 : -34 });
         },
-        newMap: function (event) {
+        newMap: function () {
             if (confirm("Are you sure you want to create a new map?")) {
                 var map = this.model.get("map");
                 var newMap = new Map(
@@ -49,7 +54,7 @@ define([
                 this.model.set("map", newMap);
             }
         },
-        downloadMap: function (event) {
+        downloadMap: function () {
             var view = this;
             this.model.save()
                 .done(function (response) {
@@ -62,6 +67,11 @@ define([
                 .fail(function () {
                     alert("Failed to save map.");
                 });
+        },
+        undo: function () {
+            if (this.actions.length) {
+                this.aggregator.trigger("undo:" + this.actions.pop());
+            }
         }
     });
 });

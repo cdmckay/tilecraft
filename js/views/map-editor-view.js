@@ -44,14 +44,19 @@ define([
         /* The currently selected Cell index. */
         selectedIndex: null,
 
-        oldMoves: [],
+        /* A stack containing the actions taken on the map. */
+        actions: [],
 
         initialize: function (options) {
             this.aggregator = options.aggregator;
 
             this.cellsEl = this.$(".map-editor-cells");
             this.cellSelectorEl = this.cellsEl.children(".map-editor-cell-selector");
-            this.cellSelectorMarkerEl = $("<div>");
+            this.cellSelectorMarkerEl = $("<div>")
+                .on("mouseover", function () {
+                    // Stop the marker from propagating mouseover events.
+                    event.stopPropagation();
+                });
             this.cellLayersEl = this.cellsEl.children(".map-editor-cell-layers");
 
             this.listenTo(this.model, "change:map", this.render);
@@ -61,7 +66,7 @@ define([
             this.listenTo(this.model, "change:layers:change-layer-visible", this.changeCellLayerElVisibleAt);
             this.listenTo(this.aggregator, "change:select-layer", this.setSelectedLayerIndex);
             this.listenTo(this.aggregator, "change:select-tile", this.setSelectedTileGlobalId);
-            this.listenTo(this.aggregator, "change:undo", this.undo);
+            this.listenTo(this.aggregator, "undo:change:insert-cell", this.undo);
 
             this.render();
         },
@@ -153,6 +158,21 @@ define([
             var cellLayerEls = this.cellLayersEl.children();
             return cellLayerEls.length ? cellLayerEls.eq(cellLayerEls.length - index - 1) : null;
         },
+        insertSelectedTileAt: function (index) {
+            var map = this.model.get("map");
+            var layer = map.layers[this.selectedLayerIndex];
+            var tile = map.findTile(this.selectedTileGlobalId);
+
+            this.actions.push({
+                layerIndex: this.selectedLayerIndex,
+                index: index,
+                cell: layer.cells[index]
+            });
+            layer.cells[index] = new Cell(tile);
+            this.aggregator.trigger("change:insert-cell", this.selectedLayerIndex, index);
+
+            this.renderCellAt(index);
+        },
 
         showCellSelector: function () {
             if (!this.isMapEditable()) return;
@@ -164,6 +184,16 @@ define([
 
             this.cellSelectorMarkerEl.hide();
         },
+        undo: function () {
+            if (this.actions.length) {
+                var map = this.model.get("map");
+                var layer = map.layers[this.selectedLayerIndex];
+                var action = this.actions.pop();
+                layer.cells[action.index] = action.cell;
+                this.renderCellAt(action.index);
+            }
+        },
+
         updateMouseButtonState: function (event) {
             switch (event.type) {
                 case "mousedown":
@@ -180,8 +210,7 @@ define([
         highlightCell: function (event) {
             if (!this.isMapEditable()) return;
 
-
-            var cellEl = $(event.target).parents().addBack().filter(".map-editor-cell-selector > div");
+            var cellEl = $(event.target);
             if (cellEl.length) {
                 var index = parseInt(cellEl.attr("data-index"));
                 var cellEls = this.cellSelectorEl.children();
@@ -189,47 +218,20 @@ define([
                 this.selectedIndex = index;
                 cellEls.eq(index).append(this.cellSelectorMarkerEl.detach());
 
-                // If mouse button is down, then we should select the cell as well.
-                if (this.mouseButtonState[1]) this.selectCell(event);
+                // If mouse button is down, then we should insert the cell as well.
+                if (this.mouseButtonState[1]) {
+                    this.insertSelectedTileAt(index);
+                }
             }
         },
         selectCell: function (event) {
             if (!this.isMapEditable()) return;
 
-            var cellEl = $(event.target).parents().addBack().filter(".map-editor-cell-selector > div");
+            var cellEl = $(event.target).parent();
             if (cellEl.length) {
                 var index = parseInt(cellEl.attr("data-index"));
-
-                var map = this.model.get("map");
-                var layer = map.layers[this.selectedLayerIndex];
-                var tile = map.findTile(this.selectedTileGlobalId);
-
-                // Save the old tile only if the event fired from a cell, we check for this by looking for
-                // the data-index attribute.
-                // We have to do this because the event gets fired twice, once for each div. The cell and the 
-                // div with the background image. However, this is only a problem with the mouseover event so the 
-                // first onclick should be added always.
-                if (event.type === "mousedown" || event.target.getAttribute("data-index")) {
-                  this.oldMoves.push({
-                    "index": index,
-                    "tile": layer.cells[index].tile
-                  });
-                }
-                layer.cells[index] = new Cell(tile);
-                this.renderCellAt(index);
-
+                this.insertSelectedTileAt(index);
             }
-        },
-
-        undo: function(event) {
-          if (this.oldMoves.length > 0) {
-            var move = this.oldMoves.pop();
-            var map = this.model.get("map");
-            var layer = map.layers[this.selectedLayerIndex];
-            var index = move["index"];
-            layer.cells[index] = new Cell(move["tile"]);
-            this.renderCellAt(index);
-          }
         },
 
         isMapEditable: function () {

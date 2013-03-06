@@ -56,7 +56,17 @@ em {
     user-select: none;
 }
 
+.menu-separator {
+    display: inline-block;
+    vertical-align: bottom;
+    height: 24px;
+    width: 1px;
+    background: #b9b9b9;
+    margin: 4px 0;
+}
+
 .menu button {
+    vertical-align: bottom;
     height: 32px;
     width: 32px;
     padding: 4px;
@@ -77,7 +87,7 @@ em {
 }
 
 .menu button.main-menu-undo-button {
-    background-image: url(../images/24x24/document-new.png);
+    background-image: url(../images/24x24/edit-undo.png);
 }
 
 #map-editor {

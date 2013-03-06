@@ -6,8 +6,8 @@ require.config({
         "underscore": "lib/underscore",
         "backbone": "lib/backbone",
         "handlebars": "lib/handlebars",
-        "tmxjs": "lib/tmxjs",
-        "zlib": "lib/zlib.min"
+        "zlib": "lib/zlib.min",
+        "tmxjs": "lib/tmxjs"
     },
     shim: {
         "jquery-colorbox": { deps: ["jquery"] },
