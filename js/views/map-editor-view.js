@@ -146,9 +146,9 @@ define([
             var cellLayerEl = this.generateCellLayerEl(layer);
             var cellLayerElsCount = this.cellLayersEl.children().length;
             if (cellLayerElsCount === 0 || cellLayerElsCount === index) {
-                this.cellLayersEl.prepend(cellLayerEl);
+                this.cellLayersEl.append(cellLayerEl);
             } else {
-                this.getCellLayerElAt(index).after(cellLayerEl);
+                this.getCellLayerElAt(index).before(cellLayerEl);
             }
         },
         removeCellLayerElAt: function (index) {
@@ -159,7 +159,7 @@ define([
         },
         getCellLayerElAt: function (index) {
             var cellLayerEls = this.cellLayersEl.children();
-            return cellLayerEls.length ? cellLayerEls.eq(cellLayerEls.length - index - 1) : null;
+            return cellLayerEls.length ? cellLayerEls.eq(index) : null;
         },
         insertSelectedTileAt: function (index) {
             var map = this.model.get("map");
@@ -275,7 +275,7 @@ define([
             var map = this.model.get("map");
             $.each(map.layers, function (li, layer) {
                 var cellLayerEl = view.generateCellLayerEl(layer);
-                view.cellLayersEl.prepend(cellLayerEl);
+                view.cellLayersEl.append(cellLayerEl);
             });
             this.cellsEl.prepend(this.cellLayersEl);
         },

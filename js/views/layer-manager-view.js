@@ -210,20 +210,19 @@ define([
             }
         },
         undo: function () {
-            if (this.actions.length) {
-                var map = this.model.get("map");
-                var action = this.actions.pop();
-                switch (action.type) {
-                    case "set-layer-name":
-                        this.model.setLayerNameAt(action.index, action.name);
-                        break;
-                    case "set-layer-visible":
-                        this.model.setLayerVisibleAt(action.index, action.visible);
-                        break;
-                    default:
-                        throw new Error("Unknown action type: " + action.type);
-                }
-            }
+            if (!this.actions.length) return;
+            var map = this.model.get("map");
+            var action = this.actions.pop();
+            switch (action.type) {
+                case "set-layer-name":
+                    this.model.setLayerNameAt(action.index, action.name);
+                    break;
+                case "set-layer-visible":
+                    this.model.setLayerVisibleAt(action.index, action.visible);
+                    break;
+                default:
+                    throw new Error("Unknown action type: " + action.type);
+            } // end switch
         }
     });
 });
