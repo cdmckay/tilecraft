@@ -65,7 +65,7 @@ define([
                     layersItemEl.addClass("selected");
                 }
                 layersItemEl.find("input").prop("checked", layer.visible);
-                view.layersEl.append(layersItemEl);
+                view.layersEl.prepend(layersItemEl);
             });
 
             return this;
@@ -77,8 +77,8 @@ define([
 
             // Make sure the index is within bounds.
             if (layers.length) {
-                if (this.selectedIndex === null) newIndex = 0;
-                if (this.selectedIndex >= layers.length) newIndex = layers.length - 1;
+                if (this.selectedIndex === null) newIndex = layers.length - 1;
+                if (this.selectedIndex >= layers.length) newIndex = 0;
             } else {
                 if (this.selectedIndex !== null) newIndex = null;
             }
@@ -93,15 +93,15 @@ define([
         },
         selectLayer: function (event) {
             var el = $(event.currentTarget);
-            var index = el.prevAll().length;
+            var index = el.nextAll().length;
             var els = this.layersEl.children();
 
             // Remove old selected if it exists.
             if (this.selectedIndex !== null) {
-                els.eq(this.selectedIndex).removeClass("selected");
+                els.eq(els.length - this.selectedIndex - 1).removeClass("selected");
             }
 
-            els.eq(index).addClass("selected");
+            els.eq(els.length - index - 1).addClass("selected");
             this.selectedIndex = index;
 
             // Trigger event in the aggregator.
@@ -141,8 +141,9 @@ define([
                 this.model.get("map").bounds.clone()
             );
             layer.format = TileLayer.Format.BASE64_ZLIB;
-            this.selectedIndex = 0;
-            this.model.insertLayerAt(0, layer);
+            var index = this.model.getLayers().length;
+            this.selectedIndex = index;
+            this.model.insertLayerAt(index, layer);
 
             // Trigger events in the aggregator.
             this.aggregator.trigger("change:select-layer", this.selectedIndex);
@@ -161,9 +162,10 @@ define([
         },
         raiseLayer: function () {
             var index = this.selectedIndex;
-            if (index !== null && index !== 0) {
+            if (index !== null && index !== this.model.get("map").layers.length - 1) {
+                var newIndex = index + 1;
                 var layer = this.model.removeLayerAt(index);
-                this.selectedIndex--;
+                this.selectedIndex = newIndex;
                 this.model.insertLayerAt(this.selectedIndex, layer);
 
                 // Trigger events in the aggregator.
@@ -172,10 +174,11 @@ define([
         },
         lowerLayer: function () {
             var index = this.selectedIndex;
-            if (index !== null && index !== this.model.get("map").layers.length - 1) {
+            if (index !== null && index !== 0) {
+                var newIndex = index - 1;
                 var layer = this.model.removeLayerAt(index);
-                this.selectedIndex++;
-                this.model.insertLayerAt(this.selectedIndex, layer);
+                this.selectedIndex = newIndex;
+                this.model.insertLayerAt(newIndex, layer);
 
                 // Trigger events in the aggregator.
                 this.aggregator.trigger("change:select-layer", this.selectedIndex);
@@ -184,10 +187,12 @@ define([
         duplicateLayer: function () {
             var index = this.selectedIndex;
             if (index !== null) {
+                var newIndex = index + 1;
                 var layer = this.model.get("map").layers[index];
                 var duplicateLayer = layer.clone();
                 duplicateLayer.name = "Copy of " + duplicateLayer.name;
-                this.model.insertLayerAt(index, duplicateLayer);
+                this.selectedIndex = newIndex;
+                this.model.insertLayerAt(newIndex, duplicateLayer);
 
                 // Trigger events in the aggregator.
                 this.aggregator.trigger("change:select-layer", this.selectedIndex);

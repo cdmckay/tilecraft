@@ -23,6 +23,11 @@ define(["backbone"], function (Backbone) {
                 return v.toString(16);
             });
         },
+        addLayer: function (layer) {
+            var index = this.get("map").addLayer(layer);
+            this.trigger("change:layers");
+            this.trigger("change:layers:insert-layer", index);
+        },
         insertLayerAt: function (index, layer) {
             this.get("map").insertLayerAt(index, layer);
             this.trigger("change:layers");
@@ -49,6 +54,9 @@ define(["backbone"], function (Backbone) {
             this.get("map").layers[index].visible = visible;
             this.trigger("change:layers");
             this.trigger("change:layers:set-layer-visible", index, visible)
+        },
+        getLayers: function () {
+            return this.get("map").layers;
         },
         getTileLayers: function () {
             return this.get("map").getTileLayers();

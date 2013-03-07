@@ -66,7 +66,7 @@ require([
         map: new Map(Map.Orientation.ORTHOGONAL, 32, 32, 40, 40)
     });
 
-    var url = "examples/desert.tmx";
+    var url = "examples/desert_layered.tmx";
     var options = {
         dir: url.split("/").slice(0, -1) || "."
     };
