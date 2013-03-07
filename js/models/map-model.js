@@ -34,6 +34,9 @@ define(["backbone"], function (Backbone) {
             this.trigger("change:layers:remove-layer", index);
             return layer;
         },
+        getLayerNameAt: function (index) {
+            return this.get("map").layers[index].name;
+        },
         setLayerNameAt: function (index, name) {
             this.get("map").layers[index].name = name;
             this.trigger("change:layers");

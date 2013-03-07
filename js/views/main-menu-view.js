@@ -20,20 +20,17 @@ define([
         aggregator: null,
         templates: {},
 
-        /* A stack containing the actions taken. */
+        /* A stack containing the actions recorded. */
         actions: [],
 
         initialize: function (options) {
             this.aggregator = options.aggregator;
 
-            this.listenTo(this.model, "change:cells", function () { this.updateActions("change:cells"); });
-            this.listenTo(this.model, "change:layers:set-layer-visible", function () { this.updateActions("change:layers:set-layer-visible"); });
+            this.record(this.model, "change:cells");
+            this.record(this.model, "change:layers:set-layer-name");
+            this.record(this.model, "change:layers:set-layer-visible");
         },
         render: function () {
-        },
-
-        updateActions: function (eventType) {
-            this.actions.push(eventType);
         },
 
         toggle: function () {
@@ -69,10 +66,18 @@ define([
                     alert("Failed to save map.");
                 });
         },
+
+        record: function (other, actionType) {
+            this.listenTo(other, actionType, function () {
+                this.actions.push(actionType);
+            });
+        },
         undo: function () {
             if (this.actions.length) {
                 this.aggregator.trigger("undo:" + this.actions.pop());
             }
+        },
+        redo: function () {
         }
     });
 });

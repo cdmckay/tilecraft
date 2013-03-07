@@ -43,6 +43,7 @@ define([
             this.listenTo(this.model, "change:map", this.indexLayers);
             this.listenTo(this.model, "change:layers", this.indexLayers);
 
+            this.listenTo(this.aggregator, "undo:change:layers:set-layer-name", this.undo);
             this.listenTo(this.aggregator, "undo:change:layers:set-layer-visible", this.undo);
 
             var layers = this.model.get("map").layers;
@@ -108,9 +109,14 @@ define([
         },
         renameLayer: function () {
             var index = this.selectedIndex;
-            var name = this.model.get("map").layers[index].name;
+            var name = this.model.getLayerNameAt(index);
             var result = prompt('Please enter the new Layer name:', name);
             if (result !== null && result !== "") {
+                this.actions.push({
+                    type: "set-layer-name",
+                    index: index,
+                    name: name
+                });
                 this.model.setLayerNameAt(index, result);
             }
         },
@@ -203,6 +209,9 @@ define([
                 var map = this.model.get("map");
                 var action = this.actions.pop();
                 switch (action.type) {
+                    case "set-layer-name":
+                        this.model.setLayerNameAt(action.index, action.name);
+                        break;
                     case "set-layer-visible":
                         this.model.setLayerVisibleAt(action.index, action.visible);
                         break;
