@@ -53,19 +53,22 @@ define(["backbone"], function (Backbone) {
             this.trigger("change:layers:remove-layer", index);
             return layer;
         },
+        getLayerAt: function (index) {
+            return this.get("map").layers[index];
+        },
         getLayerNameAt: function (index) {
-            return this.get("map").layers[index].name;
+            return this.getLayerAt(index).name;
         },
         setLayerNameAt: function (index, name) {
-            this.get("map").layers[index].name = name;
+            this.getLayerAt(index).name = name;
             this.trigger("change:layers");
             this.trigger("change:layers:set-layer-name", index, name);
         },
         getLayerVisibleAt: function (index) {
-            return this.get("map").layers[index].visible;
+            return this.getLayerAt(index).visible;
         },
         setLayerVisibleAt: function (index, visible) {
-            this.get("map").layers[index].visible = visible;
+            this.getLayerAt(index).visible = visible;
             this.trigger("change:layers");
             this.trigger("change:layers:set-layer-visible", index, visible)
         },
@@ -96,7 +99,7 @@ define(["backbone"], function (Backbone) {
         },
 
         setCellAt: function (layerIndex, index, cell) {
-            this.get("map").layers[layerIndex].cells[index] = cell;
+            this.getLayerAt(layerIndex).cells[index] = cell;
             this.trigger("change:cells");
             this.trigger("change:cells:set-cell", layerIndex, index, cell);
         }

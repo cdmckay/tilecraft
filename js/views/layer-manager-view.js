@@ -43,18 +43,19 @@ define([
             this.listenTo(this.model, "change:map", this.indexLayers);
             this.listenTo(this.model, "change:layers", this.indexLayers);
 
-            this.listenTo(this.aggregator, "undo:change:layers:set-layer-name", this.undo);
-            this.listenTo(this.aggregator, "undo:change:layers:set-layer-visible", this.undo);
-            this.listenTo(this.aggregator, "undo:change:layers:insert-layer", this.undo);
+            this.listenTo(this.aggregator, "undo:change:set-layer-name", this.undo);
+            this.listenTo(this.aggregator, "undo:change:set-layer-visible", this.undo);
+            this.listenTo(this.aggregator, "undo:change:insert-layer", this.undo);
+            this.listenTo(this.aggregator, "undo:change:remove-layer", this.undo);
 
-            var layers = this.model.get("map").layers;
+            var layers = this.model.getLayers();
             if (layers.length) {
                 this.indexLayers();
             }
         },
         render: function () {
             var view = this;
-            var layers = this.model.get("map").layers;
+            var layers = this.model.getLayers();
 
             this.layersEl.empty();
             $.each(layers, function (li, layer) {
@@ -73,7 +74,7 @@ define([
         },
 
         indexLayers: function () {
-            var layers = this.model.get("map").layers;
+            var layers = this.model.getLayers();
             var newIndex = this.selectedIndex;
 
             // Make sure the index is within bounds.
@@ -119,6 +120,7 @@ define([
                     name: name
                 });
                 this.model.setLayerNameAt(index, result);
+                this.aggregator.trigger("change:set-layer-name", index);
             }
         },
         toggleLayerVisible: function (event) {
@@ -131,15 +133,16 @@ define([
                 visible: this.model.getLayerVisibleAt(index)
             });
             this.model.setLayerVisibleAt(index, el.prop("checked"));
+            this.aggregator.trigger("change:set-layer-visible", index);
 
             event.preventDefault();
             event.stopPropagation();
         },
         addTileLayer: function () {
             var index = this.model.getLayers().length;
-            var tileLayers = this.model.getTileLayers();
+            var tileLayerCount = this.model.getTileLayers().length;
             var layer = new TileLayer(
-                "Tile Layer " + (tileLayers.length + 1),
+                "Tile Layer " + (tileLayerCount + 1),
                 this.model.get("map").bounds.clone()
             );
             layer.format = TileLayer.Format.BASE64_ZLIB;
@@ -148,15 +151,13 @@ define([
                 type: "insert-layer",
                 index: index
             });
-            this.selectedIndex = index;
-            this.model.insertLayerAt(index, layer);
-
-            // Trigger events in the aggregator.
+            this.insertLayerAt(index, layer);
+            this.aggregator.trigger("change:insert-layer", index, layer);
             this.aggregator.trigger("change:select-layer", this.selectedIndex);
         },
         raiseLayer: function () {
             var index = this.selectedIndex;
-            if (index !== null && index !== this.model.get("map").layers.length - 1) {
+            if (index !== null && index !== this.model.getLayers().length - 1) {
                 this.selectedIndex = index + 1;
                 this.model.raiseLayerAt(index);
 
@@ -178,7 +179,7 @@ define([
             var index = this.selectedIndex;
             if (index !== null) {
                 var newIndex = index + 1;
-                var layer = this.model.get("map").layers[index];
+                var layer = this.model.getLayerAt(index);
                 var duplicateLayer = layer.clone();
                 duplicateLayer.name = "Copy of " + duplicateLayer.name;
                 this.selectedIndex = newIndex;
@@ -191,17 +192,18 @@ define([
         removeLayer: function () {
             var index = this.selectedIndex;
             if (index !== null) {
-                var newLayerCount = this.model.get("map").layers.length - 1;
-                this.selectedIndex = newLayerCount === 0 ? null : Math.min(index, newLayerCount - 1);
-                this.model.removeLayerAt(index);
-
-                // Trigger events in the aggregator.
+                this.actions.push({
+                    type: "remove-layer",
+                    index: index,
+                    layer: this.model.getLayerAt(index)
+                });
+                this.removeLayerAt(index);
+                this.aggregator.trigger("change:remove-layer", index);
                 this.aggregator.trigger("change:select-layer", this.selectedIndex);
             }
         },
         undo: function () {
             if (!this.actions.length) return;
-            var map = this.model.get("map");
             var action = this.actions.pop();
             switch (action.type) {
                 case "set-layer-name":
@@ -211,11 +213,27 @@ define([
                     this.model.setLayerVisibleAt(action.index, action.visible);
                     break;
                 case "insert-layer":
-                    this.model.removeLayerAt(action.index);
+                    this.removeLayerAt(action.index);
+                    break;
+                case "remove-layer":
+                    this.insertLayerAt(action.index, action.layer);
                     break;
                 default:
                     throw new Error("Unknown action type: " + action.type);
             } // end switch
+            this.aggregator.trigger("change:select-layer", this.selectedIndex);
+        },
+
+        insertLayerAt: function (index, layer) {
+            this.selectedIndex = index;
+            this.model.insertLayerAt(index, layer);
+        },
+        removeLayerAt: function (index) {
+            var layers = this.model.getLayers();
+            var newLayerCount = layers.length - 1;
+
+            this.selectedIndex = newLayerCount === 0 ? null : Math.min(index, newLayerCount - 1);
+            this.model.removeLayerAt(index);
         }
     });
 });

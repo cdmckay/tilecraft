@@ -69,7 +69,7 @@ define([
 
             this.listenTo(this.aggregator, "change:select-layer", this.setSelectedLayerIndex);
             this.listenTo(this.aggregator, "change:select-tile", this.setSelectedTileGlobalId);
-            this.listenTo(this.aggregator, "undo:change:cells", this.undo);
+            this.listenTo(this.aggregator, "undo:change:set-cell", this.undo);
 
             this.render();
         },
@@ -183,11 +183,14 @@ define([
             var tile = map.findTile(this.selectedTileGlobalId);
 
             this.actions.push({
+                type: "set-cell",
                 layerIndex: this.selectedLayerIndex,
                 index: index,
                 cell: layer.cells[index]
             });
             this.model.setCellAt(this.selectedLayerIndex, index, new Cell(tile));
+            this.aggregator.trigger("change:set-cell");
+
             this.renderCellAt(this.selectedLayerIndex, index);
         },
 
@@ -202,13 +205,12 @@ define([
             this.cellSelectorMarkerEl.hide();
         },
         undo: function () {
-            if (this.actions.length) {
-                var map = this.model.get("map");
-                var action = this.actions.pop();
-                var layer = map.layers[action.layerIndex];
-                layer.cells[action.index] = action.cell;
-                this.renderCellAt(action.layerIndex, action.index);
-            }
+            if (!this.actions.length) return;
+
+            var action = this.actions.pop();
+            this.model.setCellAt(action.layerIndex, action.index, action.cell);
+
+            this.renderCellAt(action.layerIndex, action.index);
         },
 
         updateMouseButtonState: function (event) {

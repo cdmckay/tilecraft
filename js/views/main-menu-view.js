@@ -26,10 +26,11 @@ define([
         initialize: function (options) {
             this.aggregator = options.aggregator;
 
-            this.record(this.model, "change:cells");
-            this.record(this.model, "change:layers:set-layer-name");
-            this.record(this.model, "change:layers:set-layer-visible");
-            this.record(this.model, "change:layers:insert-layer");
+            this.record(this.aggregator, "change:set-cell");
+            this.record(this.aggregator, "change:set-layer-name");
+            this.record(this.aggregator, "change:set-layer-visible");
+            this.record(this.aggregator, "change:insert-layer");
+            this.record(this.aggregator, "change:remove-layer");
         },
         render: function () {
         },
@@ -71,11 +72,14 @@ define([
         record: function (other, actionType) {
             this.listenTo(other, actionType, function () {
                 this.actions.push(actionType);
+                console.log("record " + actionType + ", action count: " + this.actions.length)
             });
         },
         undo: function () {
             if (this.actions.length) {
-                this.aggregator.trigger("undo:" + this.actions.pop());
+                var action = this.actions.pop();
+                console.log("undo " + action + ", action count: " + this.actions.length)
+                this.aggregator.trigger("undo:" + action);
             }
         },
         redo: function () {
