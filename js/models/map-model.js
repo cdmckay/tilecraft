@@ -1,4 +1,4 @@
-define(["underscore", "backbone"], function (_, Backbone) {
+define(["backbone"], function (Backbone) {
     return Backbone.Model.extend({
         initialize: function (options) {
             this.urlRoot = options.urlRoot;
@@ -37,12 +37,15 @@ define(["underscore", "backbone"], function (_, Backbone) {
         setLayerNameAt: function (index, name) {
             this.get("map").layers[index].name = name;
             this.trigger("change:layers");
-            this.trigger("change:layers:set-layer-name");
+            this.trigger("change:layers:set-layer-name", index, name);
+        },
+        getLayerVisibleAt: function (index) {
+            return this.get("map").layers[index].visible;
         },
         setLayerVisibleAt: function (index, visible) {
             this.get("map").layers[index].visible = visible;
             this.trigger("change:layers");
-            this.trigger("change:layers:change-layer-visible", index, visible)
+            this.trigger("change:layers:set-layer-visible", index, visible)
         },
         getTileLayers: function () {
             return this.get("map").getTileLayers();
@@ -54,17 +57,23 @@ define(["underscore", "backbone"], function (_, Backbone) {
         addTileSet: function (tileSet) {
             this.get("map").addTileSet(tileSet);
             this.trigger("change:tileSets");
-            this.trigger("change:tileSets:add-tileSet");
+            this.trigger("change:tileSets:add-tileSet", tileSet);
         },
         setTileSetNameAt: function (index, name) {
             this.get("map").tileSets[index].name = name;
             this.trigger("change:tileSets");
-            this.trigger("change:tileSets:set-tileSet-name");
+            this.trigger("change:tileSets:set-tileSet-name", index, name);
         },
         removeTileSetAt: function (index) {
             this.get("map").removeTileSetAt(index);
             this.trigger("change:tileSets");
-            this.trigger("change:tileSets:remove-tileSet");
+            this.trigger("change:tileSets:remove-tileSet", index);
+        },
+
+        setCellAt: function (layerIndex, index, cell) {
+            this.get("map").layers[layerIndex].cells[index] = cell;
+            this.trigger("change:cells");
+            this.trigger("change:cells:set-cell", layerIndex, index, cell);
         }
     });
 });

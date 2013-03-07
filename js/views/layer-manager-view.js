@@ -32,6 +32,9 @@ define([
         /* The currently selected Layer index. */
         selectedIndex: null,
 
+        /* A stack containing the actions taken on the layers. */
+        actions: [],
+
         initialize: function (options) {
             this.aggregator = options.aggregator;
 
@@ -39,6 +42,8 @@ define([
 
             this.listenTo(this.model, "change:map", this.indexLayers);
             this.listenTo(this.model, "change:layers", this.indexLayers);
+
+            this.listenTo(this.aggregator, "undo:change:layers:set-layer-visible", this.undo);
 
             var layers = this.model.get("map").layers;
             if (layers.length) {
@@ -112,7 +117,14 @@ define([
         toggleLayerVisible: function (event) {
             var el = $(event.currentTarget);
             var index = el.parent().prevAll().length;
+
+            this.actions.push({
+                type: "set-layer-visible",
+                index: index,
+                visible: this.model.getLayerVisibleAt(index)
+            });
             this.model.setLayerVisibleAt(index, el.prop("checked"));
+
             event.preventDefault();
             event.stopPropagation();
         },
@@ -184,6 +196,19 @@ define([
 
                 // Trigger events in the aggregator.
                 this.aggregator.trigger("change:select-layer", this.selectedIndex);
+            }
+        },
+        undo: function () {
+            if (this.actions.length) {
+                var map = this.model.get("map");
+                var action = this.actions.pop();
+                switch (action.type) {
+                    case "set-layer-visible":
+                        this.model.setLayerVisibleAt(action.index, action.visible);
+                        break;
+                    default:
+                        throw new Error("Unknown action type: " + action.type);
+                }
             }
         }
     });

@@ -26,7 +26,8 @@ define([
         initialize: function (options) {
             this.aggregator = options.aggregator;
 
-            this.listenTo(this.aggregator, "change:insert-cell", function () { this.updateActions("change:insert-cell"); });
+            this.listenTo(this.model, "change:cells", function () { this.updateActions("change:cells"); });
+            this.listenTo(this.model, "change:layers:set-layer-visible", function () { this.updateActions("change:layers:set-layer-visible"); });
         },
         render: function () {
         },

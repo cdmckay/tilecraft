@@ -63,10 +63,11 @@ define([
             this.listenTo(this.model, "change:tileSets", this.render);
             this.listenTo(this.model, "change:layers:insert-layer", this.insertCellLayerElAt);
             this.listenTo(this.model, "change:layers:remove-layer", this.removeCellLayerElAt);
-            this.listenTo(this.model, "change:layers:change-layer-visible", this.changeCellLayerElVisibleAt);
+            this.listenTo(this.model, "change:layers:set-layer-visible", this.setCellLayerElVisibleAt);
+
             this.listenTo(this.aggregator, "change:select-layer", this.setSelectedLayerIndex);
             this.listenTo(this.aggregator, "change:select-tile", this.setSelectedTileGlobalId);
-            this.listenTo(this.aggregator, "undo:change:insert-cell", this.undo);
+            this.listenTo(this.aggregator, "undo:change:cells", this.undo);
 
             this.render();
         },
@@ -153,7 +154,7 @@ define([
         removeCellLayerElAt: function (index) {
             this.getCellLayerElAt(index).remove();
         },
-        changeCellLayerElVisibleAt: function (index, visible) {
+        setCellLayerElVisibleAt: function (index, visible) {
             this.getCellLayerElAt(index).css("display", visible ? "block" : "none");
         },
         getCellLayerElAt: function (index) {
@@ -170,9 +171,7 @@ define([
                 index: index,
                 cell: layer.cells[index]
             });
-            layer.cells[index] = new Cell(tile);
-            this.aggregator.trigger("change:insert-cell", this.selectedLayerIndex, index);
-
+            this.model.setCellAt(this.selectedLayerIndex, index, new Cell(tile));
             this.renderCellAt(this.selectedLayerIndex, index);
         },
 
