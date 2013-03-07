@@ -29,6 +29,7 @@ define([
             this.record(this.model, "change:cells");
             this.record(this.model, "change:layers:set-layer-name");
             this.record(this.model, "change:layers:set-layer-visible");
+            this.record(this.model, "change:layers:insert-layer");
         },
         render: function () {
         },

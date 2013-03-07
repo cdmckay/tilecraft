@@ -62,6 +62,8 @@ define([
             this.listenTo(this.model, "change:map", this.render);
             this.listenTo(this.model, "change:tileSets", this.render);
             this.listenTo(this.model, "change:layers:insert-layer", this.insertCellLayerElAt);
+            this.listenTo(this.model, "change:layers:raise-layer", this.raiseCellLayerElAt);
+            this.listenTo(this.model, "change:layers:lower-layer", this.lowerCellLayerElAt);
             this.listenTo(this.model, "change:layers:remove-layer", this.removeCellLayerElAt);
             this.listenTo(this.model, "change:layers:set-layer-visible", this.setCellLayerElVisibleAt);
 
@@ -150,6 +152,20 @@ define([
             } else {
                 this.getCellLayerElAt(index).before(cellLayerEl);
             }
+        },
+        raiseCellLayerElAt: function (index) {
+            var cellLayerElsCount = this.cellLayersEl.children().length;
+            if (cellLayerElsCount <= 1 || index === cellLayerElsCount + 1) return;
+
+            var cellLayerEl = this.getCellLayerElAt(index);
+            cellLayerEl.insertAfter(cellLayerEl.next());
+        },
+        lowerCellLayerElAt: function (index) {
+            var cellLayerElsCount = this.cellLayersEl.children().length;
+            if (cellLayerElsCount <= 1 || index === 0) return;
+
+            var cellLayerEl = this.getCellLayerElAt(index);
+            cellLayerEl.insertBefore(cellLayerEl.prev());
         },
         removeCellLayerElAt: function (index) {
             this.getCellLayerElAt(index).remove();

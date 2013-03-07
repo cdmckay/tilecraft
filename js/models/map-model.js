@@ -33,6 +33,20 @@ define(["backbone"], function (Backbone) {
             this.trigger("change:layers");
             this.trigger("change:layers:insert-layer", index);
         },
+        raiseLayerAt: function (index) {
+            var map = this.get("map");
+            var layer = map.removeLayerAt(index);
+            map.insertLayerAt(index + 1, layer);
+            this.trigger("change:layers");
+            this.trigger("change:layers:raise-layer", index);
+        },
+        lowerLayerAt: function (index) {
+            var map = this.get("map");
+            var layer = map.removeLayerAt(index);
+            map.insertLayerAt(index - 1, layer);
+            this.trigger("change:layers");
+            this.trigger("change:layers:lower-layer", index);
+        },
         removeLayerAt: function (index) {
             var layer = this.get("map").removeLayerAt(index);
             this.trigger("change:layers");

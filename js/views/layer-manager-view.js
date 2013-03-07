@@ -45,6 +45,7 @@ define([
 
             this.listenTo(this.aggregator, "undo:change:layers:set-layer-name", this.undo);
             this.listenTo(this.aggregator, "undo:change:layers:set-layer-visible", this.undo);
+            this.listenTo(this.aggregator, "undo:change:layers:insert-layer", this.undo);
 
             var layers = this.model.get("map").layers;
             if (layers.length) {
@@ -122,7 +123,7 @@ define([
         },
         toggleLayerVisible: function (event) {
             var el = $(event.currentTarget);
-            var index = el.parent().prevAll().length;
+            var index = el.parent().nextAll().length;
 
             this.actions.push({
                 type: "set-layer-visible",
@@ -135,27 +136,20 @@ define([
             event.stopPropagation();
         },
         addTileLayer: function () {
+            var index = this.model.getLayers().length;
             var tileLayers = this.model.getTileLayers();
             var layer = new TileLayer(
                 "Tile Layer " + (tileLayers.length + 1),
                 this.model.get("map").bounds.clone()
             );
             layer.format = TileLayer.Format.BASE64_ZLIB;
-            var index = this.model.getLayers().length;
+
+            this.actions.push({
+                type: "insert-layer",
+                index: index
+            });
             this.selectedIndex = index;
             this.model.insertLayerAt(index, layer);
-
-            // Trigger events in the aggregator.
-            this.aggregator.trigger("change:select-layer", this.selectedIndex);
-        },
-        addDoodadGroup: function () {
-            var doodadGroups = this.model.getDoodadGroups();
-            var layer = new DoodadGroup(
-                "Object Group " + (doodadGroups.length + 1),
-                this.model.get("map").bounds.clone()
-            );
-            this.selectedIndex = 0;
-            this.model.insertLayerAt(0, layer);
 
             // Trigger events in the aggregator.
             this.aggregator.trigger("change:select-layer", this.selectedIndex);
@@ -163,10 +157,8 @@ define([
         raiseLayer: function () {
             var index = this.selectedIndex;
             if (index !== null && index !== this.model.get("map").layers.length - 1) {
-                var newIndex = index + 1;
-                var layer = this.model.removeLayerAt(index);
-                this.selectedIndex = newIndex;
-                this.model.insertLayerAt(this.selectedIndex, layer);
+                this.selectedIndex = index + 1;
+                this.model.raiseLayerAt(index);
 
                 // Trigger events in the aggregator.
                 this.aggregator.trigger("change:select-layer", this.selectedIndex);
@@ -175,10 +167,8 @@ define([
         lowerLayer: function () {
             var index = this.selectedIndex;
             if (index !== null && index !== 0) {
-                var newIndex = index - 1;
-                var layer = this.model.removeLayerAt(index);
-                this.selectedIndex = newIndex;
-                this.model.insertLayerAt(newIndex, layer);
+                this.selectedIndex = index - 1;
+                this.model.lowerLayerAt(index);
 
                 // Trigger events in the aggregator.
                 this.aggregator.trigger("change:select-layer", this.selectedIndex);
@@ -219,6 +209,9 @@ define([
                     break;
                 case "set-layer-visible":
                     this.model.setLayerVisibleAt(action.index, action.visible);
+                    break;
+                case "insert-layer":
+                    this.model.removeLayerAt(action.index);
                     break;
                 default:
                     throw new Error("Unknown action type: " + action.type);
