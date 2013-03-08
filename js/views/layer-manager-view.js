@@ -47,6 +47,8 @@ define([
             this.listenTo(this.aggregator, "undo:change:set-layer-visible", this.undo);
             this.listenTo(this.aggregator, "undo:change:insert-layer", this.undo);
             this.listenTo(this.aggregator, "undo:change:remove-layer", this.undo);
+            this.listenTo(this.aggregator, "undo:change:raise-layer", this.undo);
+            this.listenTo(this.aggregator, "undo:change:lower-layer", this.undo);
 
             var layers = this.model.getLayers();
             if (layers.length) {
@@ -158,20 +160,24 @@ define([
         raiseLayer: function () {
             var index = this.selectedIndex;
             if (index !== null && index !== this.model.getLayers().length - 1) {
-                this.selectedIndex = index + 1;
-                this.model.raiseLayerAt(index);
-
-                // Trigger events in the aggregator.
+                this.actions.push({
+                    type: "raise-layer",
+                    index: index
+                });
+                this.raiseLayerAt(index);
+                this.aggregator.trigger("change:raise-layer", index);
                 this.aggregator.trigger("change:select-layer", this.selectedIndex);
             }
         },
         lowerLayer: function () {
             var index = this.selectedIndex;
             if (index !== null && index !== 0) {
-                this.selectedIndex = index - 1;
-                this.model.lowerLayerAt(index);
-
-                // Trigger events in the aggregator.
+                this.actions.push({
+                    type: "lower-layer",
+                    index: index
+                });
+                this.lowerLayerAt(index);
+                this.aggregator.trigger("change:lower-layer", index);
                 this.aggregator.trigger("change:select-layer", this.selectedIndex);
             }
         },
@@ -182,10 +188,9 @@ define([
                 var layer = this.model.getLayerAt(index);
                 var duplicateLayer = layer.clone();
                 duplicateLayer.name = "Copy of " + duplicateLayer.name;
+
                 this.selectedIndex = newIndex;
                 this.model.insertLayerAt(newIndex, duplicateLayer);
-
-                // Trigger events in the aggregator.
                 this.aggregator.trigger("change:select-layer", this.selectedIndex);
             }
         },
@@ -218,6 +223,12 @@ define([
                 case "remove-layer":
                     this.insertLayerAt(action.index, action.layer);
                     break;
+                case "raise-layer":
+                    this.lowerLayerAt(action.index + 1);
+                    break;
+                case "lower-layer":
+                    this.raiseLayerAt(action.index - 1);
+                    break;
                 default:
                     throw new Error("Unknown action type: " + action.type);
             } // end switch
@@ -234,6 +245,14 @@ define([
 
             this.selectedIndex = newLayerCount === 0 ? null : Math.min(index, newLayerCount - 1);
             this.model.removeLayerAt(index);
+        },
+        raiseLayerAt: function (index) {
+            this.selectedIndex = index + 1;
+            this.model.raiseLayerAt(index);
+        },
+        lowerLayerAt: function (index) {
+            this.selectedIndex = index - 1;
+            this.model.lowerLayerAt(index);
         }
     });
 });

@@ -31,6 +31,8 @@ define([
             this.record(this.aggregator, "change:set-layer-visible");
             this.record(this.aggregator, "change:insert-layer");
             this.record(this.aggregator, "change:remove-layer");
+            this.record(this.aggregator, "change:raise-layer");
+            this.record(this.aggregator, "change:lower-layer");
         },
         render: function () {
         },
