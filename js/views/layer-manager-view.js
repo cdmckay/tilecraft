@@ -189,8 +189,12 @@ define([
                 var duplicateLayer = layer.clone();
                 duplicateLayer.name = "Copy of " + duplicateLayer.name;
 
-                this.selectedIndex = newIndex;
-                this.model.insertLayerAt(newIndex, duplicateLayer);
+                this.actions.push({
+                    type: "insert-layer",
+                    index: newIndex
+                });
+                this.insertLayerAt(newIndex, duplicateLayer);
+                this.aggregator.trigger("change:insert-layer", newIndex, duplicateLayer);
                 this.aggregator.trigger("change:select-layer", this.selectedIndex);
             }
         },
