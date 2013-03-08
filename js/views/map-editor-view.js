@@ -53,7 +53,7 @@ define([
             this.cellsEl = this.$(".map-editor-cells");
             this.cellSelectorEl = this.cellsEl.children(".map-editor-cell-selector");
             this.cellSelectorMarkerEl = $("<div>")
-                .on("mouseover", function () {
+                .on("mouseover", function (event) {
                     // Stop the marker from propagating mouseover events.
                     event.stopPropagation();
                 });
